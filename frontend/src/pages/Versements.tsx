@@ -7,15 +7,64 @@ import { TextField, SelectField, FormActions } from '../components/Field';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import type { Pdv } from '../types';
+import { downloadPdf, downloadCsvData } from '../utils/export';
 
 interface Versement {
   id: string;
   montant: number;
   banque: string;
   bordereau: string;
-  statut: string;
   created_at: string;
+  statut: string;
   pdv?: { name: string; code: string } | null;
+}
+
+async function fetchAllVersements(): Promise<Versement[]> {
+  const res = await api.get<{ data: Versement[] }>('/versements', { params: { limit: 5000 } });
+  return res.data.data;
+}
+
+async function handleExportPdf() {
+  const rows = await fetchAllVersements();
+  const total = rows.reduce((s, r) => s + Number(r.montant), 0);
+  downloadPdf({
+    title: 'Rapport des Versements',
+    subtitle: `Exporté le ${new Date().toLocaleDateString('fr-FR')} — ${rows.length} versement(s)`,
+    filename: `versements-${new Date().toISOString().slice(0, 10)}.pdf`,
+    columns: [
+      { header: 'Date', dataKey: 'date', width: 25 },
+      { header: 'PDV', dataKey: 'pdv', width: 55 },
+      { header: 'Banque', dataKey: 'banque', width: 35 },
+      { header: 'Bordereau', dataKey: 'bordereau', width: 35 },
+      { header: 'Montant (F)', dataKey: 'montant', align: 'right', width: 30 },
+      { header: 'Statut', dataKey: 'statut', width: 22 },
+    ],
+    rows: rows.map((r) => ({
+      date: new Date(r.created_at).toLocaleDateString('fr-FR'),
+      pdv: r.pdv ? `${r.pdv.code} — ${r.pdv.name}` : '—',
+      banque: r.banque, bordereau: r.bordereau,
+      montant: new Intl.NumberFormat('fr-FR').format(r.montant),
+      statut: r.statut,
+    })),
+    totals: [
+      { label: 'Total versé', value: `${new Intl.NumberFormat('fr-FR').format(total)} F CFA` },
+      { label: 'Nombre de versements', value: String(rows.length) },
+    ],
+  });
+}
+
+async function handleExportCsv() {
+  const rows = await fetchAllVersements();
+  downloadCsvData(
+    'Versements',
+    ['Date', 'PDV', 'Banque', 'N° Bordereau', 'Montant (F)', 'Statut'],
+    rows.map((r) => [
+      new Date(r.created_at).toLocaleDateString('fr-FR'),
+      r.pdv ? `${r.pdv.code} — ${r.pdv.name}` : '—',
+      r.banque, r.bordereau, r.montant, r.statut,
+    ]),
+    `versements-${new Date().toISOString().slice(0, 10)}.csv`,
+  );
 }
 
 const fmt = (n: number) => new Intl.NumberFormat('fr-FR').format(n);
@@ -127,12 +176,24 @@ export default function Versements() {
           </>
         }
         toolbar={
-          <button
-            onClick={() => setOpen(true)}
-            className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-          >
-            + Nouveau versement
-          </button>
+          <div className="flex gap-2">
+            {canConfirm && (
+              <>
+                <button onClick={handleExportCsv}
+                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  ↓ CSV
+                </button>
+                <button onClick={handleExportPdf}
+                  className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100">
+                  ↓ PDF
+                </button>
+              </>
+            )}
+            <button onClick={() => setOpen(true)}
+              className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+              + Nouveau versement
+            </button>
+          </div>
         }
         rowActions={
           canConfirm
