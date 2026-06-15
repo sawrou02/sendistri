@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '../config/database';
 import { buildPagination } from '../utils/pagination';
 import { AuthenticatedRequest, UserRole } from '../types';
+import { broadcastToRoles } from '../sse/notificationHub';
 
 export async function listVersements(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -53,6 +54,11 @@ export async function createVersement(req: AuthenticatedRequest, res: Response, 
 
     const versement = await prisma.versement.create({
       data: { pdv_id: pdvId, montant, banque, bordereau, created_by: req.user.userId },
+    });
+    broadcastToRoles(['SUPER', 'ADMIN', 'ACCOUNTANT'], 'versement:pending', {
+      id: versement.id,
+      montant: Number(versement.montant),
+      pdv_id: versement.pdv_id,
     });
     res.status(201).json({ success: true, data: versement });
   } catch (err) {

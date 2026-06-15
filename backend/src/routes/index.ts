@@ -10,6 +10,7 @@ import dashboardRoutes from './dashboard.routes';
 import commissionRoutes from './commission.routes';
 import objectifRoutes from './objectif.routes';
 import auditlogRoutes from './auditlog.routes';
+import notificationRoutes from './notification.routes';
 
 const router: Router = Router();
 
@@ -24,5 +25,6 @@ router.use('/dashboard', dashboardRoutes);
 router.use('/commissions', commissionRoutes);
 router.use('/objectifs', objectifRoutes);
 router.use('/audit-logs', auditlogRoutes);
+router.use('/notifications', notificationRoutes);
 
 export default router;

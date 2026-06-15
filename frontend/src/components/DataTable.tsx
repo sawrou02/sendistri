@@ -8,6 +8,7 @@ export interface Column<T> {
   header: string;
   render?: (row: T) => React.ReactNode;
   align?: 'left' | 'right' | 'center';
+  hideOnMobile?: boolean;
 }
 
 interface Props<T> {
@@ -65,9 +66,9 @@ export default function DataTable<T extends { id: string }>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-sendistri-dark">{title}</h1>
-        <div className="flex gap-2">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <h1 className="text-xl font-bold text-sendistri-dark md:text-2xl">{title}</h1>
+        <div className="flex flex-wrap items-center gap-2">
           {searchable && (
             <>
               <input
@@ -75,7 +76,7 @@ export default function DataTable<T extends { id: string }>({
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && applySearch()}
                 placeholder="Rechercher…"
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-sendistri-green"
+                className="w-40 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-sendistri-green sm:w-auto"
               />
               <button
                 onClick={applySearch}
@@ -92,51 +93,53 @@ export default function DataTable<T extends { id: string }>({
       {filters && <div className="flex flex-wrap items-end gap-3 rounded-xl bg-white p-4 shadow-sm">{filters}</div>}
 
       <div className="overflow-hidden rounded-xl bg-white shadow-sm">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b bg-gray-50 text-left text-gray-500">
-              {columns.map((c) => (
-                <th key={c.key} className={`px-4 py-3 ${c.align === 'right' ? 'text-right' : ''}`}>
-                  {c.header}
-                </th>
-              ))}
-              {rowActions && <th className="px-4 py-3 text-right">Actions</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading && (
-              <tr>
-                <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-4 py-6 text-center text-gray-400">
-                  Chargement…
-                </td>
-              </tr>
-            )}
-            {isError && (
-              <tr>
-                <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-4 py-6 text-center text-sendistri-red">
-                  Erreur de chargement
-                </td>
-              </tr>
-            )}
-            {!isLoading && rows.length === 0 && (
-              <tr>
-                <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-4 py-6 text-center text-gray-400">
-                  Aucun résultat
-                </td>
-              </tr>
-            )}
-            {rows.map((row) => (
-              <tr key={row.id} className="border-b last:border-0 hover:bg-gray-50">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[600px] text-sm">
+            <thead>
+              <tr className="border-b bg-gray-50 text-left text-gray-500">
                 {columns.map((c) => (
-                  <td key={c.key} className={`px-4 py-3 ${c.align === 'right' ? 'text-right' : ''}`}>
-                    {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? '—')}
-                  </td>
+                  <th key={c.key} className={`px-4 py-3 ${c.align === 'right' ? 'text-right' : ''} ${c.hideOnMobile ? 'hidden sm:table-cell' : ''}`}>
+                    {c.header}
+                  </th>
                 ))}
-                {rowActions && <td className="px-4 py-3 text-right">{rowActions(row)}</td>}
+                {rowActions && <th className="px-4 py-3 text-right">Actions</th>}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {isLoading && (
+                <tr>
+                  <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-4 py-6 text-center text-gray-400">
+                    Chargement…
+                  </td>
+                </tr>
+              )}
+              {isError && (
+                <tr>
+                  <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-4 py-6 text-center text-sendistri-red">
+                    Erreur de chargement
+                  </td>
+                </tr>
+              )}
+              {!isLoading && rows.length === 0 && (
+                <tr>
+                  <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-4 py-6 text-center text-gray-400">
+                    Aucun résultat
+                  </td>
+                </tr>
+              )}
+              {rows.map((row) => (
+                <tr key={row.id} className="border-b last:border-0 hover:bg-gray-50">
+                  {columns.map((c) => (
+                    <td key={c.key} className={`px-4 py-3 ${c.align === 'right' ? 'text-right' : ''} ${c.hideOnMobile ? 'hidden sm:table-cell' : ''}`}>
+                      {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? '—')}
+                    </td>
+                  ))}
+                  {rowActions && <td className="px-4 py-3 text-right">{rowActions(row)}</td>}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {meta && meta.totalPages > 1 && (

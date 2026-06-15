@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '../config/database';
 import { buildPagination } from '../utils/pagination';
 import { AuthenticatedRequest, UserRole } from '../types';
+import { broadcastToRoles } from '../sse/notificationHub';
 
 export async function listEncaissements(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -68,6 +69,13 @@ export async function createEncaissement(req: AuthenticatedRequest, res: Respons
         options: options as import('@prisma/client').Prisma.InputJsonValue | undefined,
         created_by: req.user.userId,
       },
+    });
+    broadcastToRoles(['SUPER', 'ADMIN', 'ACCOUNTANT'], 'encaissement:pending', {
+      id: encaissement.id,
+      montant: Number(encaissement.montant),
+      pdv_id: encaissement.pdv_id,
+      formule: encaissement.formule,
+      type: encaissement.type,
     });
     res.status(201).json({ success: true, data: encaissement });
   } catch (err) {

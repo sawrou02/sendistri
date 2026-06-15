@@ -43,7 +43,12 @@ export function createApp(): express.Application {
     })
   );
 
-  app.use(compression());
+  app.use(compression({
+    filter: (req, res) => {
+      if (req.headers.accept?.includes('text/event-stream')) return false;
+      return compression.filter(req, res);
+    },
+  }));
   app.use(cookieParser());
   app.use(express.json({ limit: '10kb' }));
   app.use(express.urlencoded({ extended: false, limit: '10kb' }));
