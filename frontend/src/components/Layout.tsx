@@ -16,6 +16,9 @@ const NAV: NavItem[] = [
   { to: '/versements', label: 'Versements', roles: ['SUPER', 'ADMIN', 'PDV_OPERATOR', 'ACCOUNTANT'] },
   { to: '/decoders', label: 'Décodeurs', roles: ['SUPER', 'ADMIN', 'LOGISTICS'] },
   { to: '/commissions', label: 'Commissions', roles: ['SUPER', 'ADMIN', 'ACCOUNTANT', 'COMMERCIAL'] },
+  { to: '/objectifs', label: 'Objectifs', roles: ['SUPER', 'ADMIN', 'COMMERCIAL'] },
+  { to: '/users', label: 'Utilisateurs', roles: ['SUPER', 'ADMIN'] },
+  { to: '/audit-log', label: 'Journal d\'audit', roles: ['SUPER', 'ADMIN'] },
 ];
 
 export default function Layout() {

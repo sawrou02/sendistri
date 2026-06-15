@@ -9,6 +9,9 @@ import Encaissements from './pages/Encaissements';
 import Versements from './pages/Versements';
 import Decoders from './pages/Decoders';
 import Commissions from './pages/Commissions';
+import Users from './pages/Users';
+import Objectifs from './pages/Objectifs';
+import AuditLog from './pages/AuditLog';
 
 function Protected({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
@@ -41,6 +44,9 @@ export default function App() {
         <Route path="versements" element={<Versements />} />
         <Route path="decoders" element={<Decoders />} />
         <Route path="commissions" element={<Commissions />} />
+        <Route path="users" element={<Users />} />
+        <Route path="objectifs" element={<Objectifs />} />
+        <Route path="audit-log" element={<AuditLog />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

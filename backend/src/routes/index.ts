@@ -8,6 +8,8 @@ import versementRoutes from './versement.routes';
 import decoderRoutes from './decoder.routes';
 import dashboardRoutes from './dashboard.routes';
 import commissionRoutes from './commission.routes';
+import objectifRoutes from './objectif.routes';
+import auditlogRoutes from './auditlog.routes';
 
 const router: Router = Router();
 
@@ -20,5 +22,7 @@ router.use('/versements', versementRoutes);
 router.use('/decoders', decoderRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/commissions', commissionRoutes);
+router.use('/objectifs', objectifRoutes);
+router.use('/audit-logs', auditlogRoutes);
 
 export default router;
