@@ -1,0 +1,319 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  SUPER
+  ADMIN
+  PDV_OPERATOR
+  ACCOUNTANT
+  LOGISTICS
+  COMMERCIAL
+}
+
+enum PDVType {
+  PDV
+  PARTNER
+}
+
+enum PDVStatut {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum SubscriberStatut {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  ECHU
+}
+
+enum Formule {
+  ACCESS
+  EVASION
+  EVASION_PLUS
+  TOUT_CANAL
+  PRESTIGE
+}
+
+enum ModePaiement {
+  WAVE
+  ORANGE_MONEY
+  CASH
+  CHEQUE
+}
+
+enum EncaissementType {
+  REABONNEMENT
+  RECRUTEMENT
+}
+
+enum EncaissementStatut {
+  PENDING
+  VALIDATED
+  REJECTED
+}
+
+enum VersementStatut {
+  PENDING
+  CONFIRMED
+  REJECTED
+}
+
+enum DecoderStatut {
+  STOCK
+  DEPLOYED
+  IMMOBILIZED
+  LOST
+}
+
+enum CommissionStatut {
+  CALCULATED
+  VALIDATED
+  PAID
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password_hash String
+  role          Role
+  pdv_id        String?
+  is_active     Boolean   @default(true)
+  last_login    DateTime?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  // Relations
+  pdv             PDV?           @relation("UserPDV", fields: [pdv_id], references: [id])
+  refresh_tokens  RefreshToken[]
+  encaissements_created   Encaissement[] @relation("EncaissementCreatedBy")
+  encaissements_validated Encaissement[] @relation("EncaissementValidatedBy")
+  versements_created      Versement[]    @relation("VersementCreatedBy")
+  versements_confirmed    Versement[]    @relation("VersementConfirmedBy")
+  subscriptions_recorded  Subscription[] @relation("SubscriptionRecordedBy")
+  commissions_validated   Commission[]   @relation("CommissionValidatedBy")
+  audit_logs              AuditLog[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid())
+  user_id    String
+  token_hash String   @unique
+  expires_at DateTime
+  revoked    Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model PDV {
+  id         String    @id @default(uuid())
+  code       String    @unique
+  name       String
+  type       PDVType
+  secteur    String
+  region     String
+  phone      String?
+  email      String?
+  caution    Decimal   @db.Decimal(15, 2)
+  solde      Decimal   @default(0) @db.Decimal(15, 2)
+  statut     PDVStatut @default(ACTIVE)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  // Relations
+  users        User[]         @relation("UserPDV")
+  subscribers  Subscriber[]
+  encaissements Encaissement[]
+  versements   Versement[]
+  decoders     Decoder[]
+  commissions  Commission[]
+  objectifs    Objectif[]
+
+  @@map("pdvs")
+}
+
+model Subscriber {
+  id           String           @id @default(uuid())
+  code         String           @unique
+  nom          String
+  prenom       String
+  phone        String
+  pdv_id       String
+  formule      Formule
+  statut       SubscriberStatut @default(ACTIVE)
+  date_abo     DateTime
+  date_expiry  DateTime?
+  created_at   DateTime         @default(now())
+  updated_at   DateTime         @updatedAt
+
+  // Relations
+  pdv           PDV            @relation(fields: [pdv_id], references: [id])
+  subscriptions Subscription[]
+  encaissements Encaissement[]
+
+  @@map("subscribers")
+}
+
+model Subscription {
+  id            String       @id @default(uuid())
+  subscriber_id String
+  formule       Formule
+  duree         Int
+  montant       Decimal      @db.Decimal(15, 2)
+  date          DateTime     @default(now())
+  mode_paiement ModePaiement
+  options       Json?
+  recorded_by   String
+  created_at    DateTime     @default(now())
+
+  // Relations
+  subscriber Subscriber @relation(fields: [subscriber_id], references: [id])
+  recorded_by_user User @relation("SubscriptionRecordedBy", fields: [recorded_by], references: [id])
+
+  @@map("subscriptions")
+}
+
+model Encaissement {
+  id            String             @id @default(uuid())
+  pdv_id        String
+  type          EncaissementType
+  subscriber_id String?
+  formule       Formule
+  duree         Int
+  montant       Decimal            @db.Decimal(15, 2)
+  mode_paiement ModePaiement
+  options       Json?
+  statut        EncaissementStatut @default(PENDING)
+  validated_by  String?
+  validated_at  DateTime?
+  created_by    String
+  created_at    DateTime           @default(now())
+
+  // Relations
+  pdv             PDV        @relation(fields: [pdv_id], references: [id])
+  subscriber      Subscriber? @relation(fields: [subscriber_id], references: [id])
+  validated_by_user User?    @relation("EncaissementValidatedBy", fields: [validated_by], references: [id])
+  created_by_user User       @relation("EncaissementCreatedBy", fields: [created_by], references: [id])
+
+  @@map("encaissements")
+}
+
+model Versement {
+  id           String          @id @default(uuid())
+  pdv_id       String
+  montant      Decimal         @db.Decimal(15, 2)
+  banque       String
+  bordereau    String          @unique
+  statut       VersementStatut @default(PENDING)
+  confirmed_by String?
+  confirmed_at DateTime?
+  created_by   String
+  created_at   DateTime        @default(now())
+
+  // Relations
+  pdv               PDV   @relation(fields: [pdv_id], references: [id])
+  confirmed_by_user User? @relation("VersementConfirmedBy", fields: [confirmed_by], references: [id])
+  created_by_user   User  @relation("VersementCreatedBy", fields: [created_by], references: [id])
+
+  @@map("versements")
+}
+
+model Decoder {
+  id          String        @id @default(uuid())
+  serial      String        @unique
+  type        String
+  model       String?
+  pdv_id      String?
+  statut      DecoderStatut @default(STOCK)
+  date_sortie DateTime?
+  notes       String?
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+
+  // Relations
+  pdv PDV? @relation(fields: [pdv_id], references: [id])
+
+  @@map("decoders")
+}
+
+model Commission {
+  id                  String           @id @default(uuid())
+  pdv_id              String
+  periode             String           // YYYY-MM format
+  montant_base        Decimal          @default(0) @db.Decimal(15, 2)
+  montant_bonus       Decimal          @default(0) @db.Decimal(15, 2)
+  montant_total       Decimal          @default(0) @db.Decimal(15, 2)
+  statut              CommissionStatut @default(CALCULATED)
+  calculated_at       DateTime         @default(now())
+  validated_by        String?
+  paid_at             DateTime?
+
+  // Relations
+  pdv               PDV   @relation(fields: [pdv_id], references: [id])
+  validated_by_user User? @relation("CommissionValidatedBy", fields: [validated_by], references: [id])
+
+  @@unique([pdv_id, periode])
+  @@map("commissions")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  user_id     String?
+  action      String
+  resource    String
+  resource_id String?
+  details     Json?
+  ip_address  String
+  user_agent  String?
+  timestamp   DateTime @default(now())
+
+  // Relations
+  user User? @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}
+
+model Objectif {
+  id                   String   @id @default(uuid())
+  pdv_id               String?  // null = distributor-level objective
+  periode              String   // YYYY-MM format
+  recrutement_cible    Int      @default(0)
+  reabonnement_cible   Int      @default(0)
+  ca_cible             Decimal  @default(0) @db.Decimal(15, 2)
+  created_at           DateTime @default(now())
+
+  // Relations
+  pdv PDV? @relation(fields: [pdv_id], references: [id])
+
+  @@map("objectifs")
+}
+
+model Localite {
+  id          String   @id @default(uuid())
+  nom         String
+  region      String
+  departement String
+  commune     String?
+  created_at  DateTime @default(now())
+
+  @@map("localites")
+}
