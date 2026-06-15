@@ -53,6 +53,11 @@ export function buildOrderBy(
   return { [field]: params.sortOrder ?? 'desc' };
 }
 
+export function buildPagination(total: number, page: number, limit: number): PaginationMeta {
+  const totalPages = Math.ceil(total / limit);
+  return { page, limit, total, totalPages, hasNext: page < totalPages, hasPrev: page > 1 };
+}
+
 export function buildSearchFilter(
   search: string | undefined,
   fields: string[]
