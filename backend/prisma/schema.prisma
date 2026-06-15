@@ -93,6 +93,8 @@ model User {
   role          Role
   pdv_id        String?
   is_active     Boolean   @default(true)
+  twofa_secret  String?
+  twofa_enabled Boolean   @default(false)
   last_login    DateTime?
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt

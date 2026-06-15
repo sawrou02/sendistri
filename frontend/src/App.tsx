@@ -4,6 +4,8 @@ import Login from './pages/Login';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Pdvs from './pages/Pdvs';
+import PdvDetail from './pages/PdvDetail';
+import Profile from './pages/Profile';
 import Subscribers from './pages/Subscribers';
 import Encaissements from './pages/Encaissements';
 import Versements from './pages/Versements';
@@ -39,6 +41,8 @@ export default function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="pdvs" element={<Pdvs />} />
+        <Route path="pdvs/:id" element={<PdvDetail />} />
+        <Route path="profile" element={<Profile />} />
         <Route path="subscribers" element={<Subscribers />} />
         <Route path="encaissements" element={<Encaissements />} />
         <Route path="versements" element={<Versements />} />

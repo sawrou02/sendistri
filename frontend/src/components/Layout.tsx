@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
+import GlobalSearch from './GlobalSearch';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -108,6 +109,9 @@ export default function Layout() {
         )}
       </div>
 
+      {/* Recherche */}
+      <GlobalSearch />
+
       {/* Nav */}
       <nav className="flex-1 space-y-1 overflow-y-auto px-3">
         {items.map((item) => (
@@ -129,7 +133,13 @@ export default function Layout() {
 
       {/* User footer */}
       <div className="border-t border-white/10 p-4 text-sm">
-        <p className="truncate font-medium">{user?.email}</p>
+        <Link
+          to="/profile"
+          onClick={() => setSidebarOpen(false)}
+          className="mb-1 block truncate font-medium hover:text-sendistri-green"
+        >
+          {user?.email}
+        </Link>
         <p className="mb-3 text-xs text-gray-400">{user?.role}</p>
         <button
           onClick={() => { setPwdOpen(true); setPwdError(''); setPwdSuccess(false); setPwdForm({ ...EMPTY_PWD }); setSidebarOpen(false); }}

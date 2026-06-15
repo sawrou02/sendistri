@@ -132,6 +132,13 @@ export default function Encaissements() {
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['/encaissements'] });
 
+  const bulkMutation = useMutation({
+    mutationFn: async ({ ids, statut }: { ids: string[]; statut: 'VALIDATED' | 'REJECTED' }) => {
+      await api.post('/encaissements/bulk-validate', { ids, statut });
+    },
+    onSuccess: invalidate,
+  });
+
   const createMutation = useMutation({
     mutationFn: async () => {
       await api.post('/encaissements', {
@@ -165,6 +172,25 @@ export default function Encaissements() {
         columns={columns}
         searchable={false}
         extraParams={extraParams}
+        selectable={canValidate}
+        bulkActions={(ids, clear) => (
+          <>
+            <button
+              onClick={() => bulkMutation.mutate({ ids, statut: 'VALIDATED' }, { onSuccess: clear })}
+              disabled={bulkMutation.isPending}
+              className="rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-60"
+            >
+              ✓ Valider tout
+            </button>
+            <button
+              onClick={() => bulkMutation.mutate({ ids, statut: 'REJECTED' }, { onSuccess: clear })}
+              disabled={bulkMutation.isPending}
+              className="rounded-lg bg-red-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-600 disabled:opacity-60"
+            >
+              ✕ Rejeter tout
+            </button>
+          </>
+        )}
         filters={
           <>
             <div className="flex flex-col gap-1">

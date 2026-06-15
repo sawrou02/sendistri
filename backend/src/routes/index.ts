@@ -11,6 +11,7 @@ import commissionRoutes from './commission.routes';
 import objectifRoutes from './objectif.routes';
 import auditlogRoutes from './auditlog.routes';
 import notificationRoutes from './notification.routes';
+import searchRoutes from './search.routes';
 
 const router: Router = Router();
 
@@ -26,5 +27,6 @@ router.use('/commissions', commissionRoutes);
 router.use('/objectifs', objectifRoutes);
 router.use('/audit-logs', auditlogRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/search', searchRoutes);
 
 export default router;

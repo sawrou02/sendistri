@@ -12,14 +12,21 @@ export async function getKpis(req: AuthenticatedRequest, res: Response, next: Ne
 
     const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 
+    const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 1);
+    const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+
     const [
       encaissementsJour,
       abonnesActifs,
       decodeurStock,
       versementsEnAttente,
+      encaissementsEnAttente,
       objectifCurrentMonth,
       recrutementsMois,
       recentEncaissements,
+      encaissementsMoisPrecedent,
+      encaissementsMoisCourant,
     ] = await prisma.$transaction([
       prisma.encaissement.aggregate({
         where: {
@@ -35,6 +42,11 @@ export async function getKpis(req: AuthenticatedRequest, res: Response, next: Ne
       }),
       prisma.decoder.count({ where: { statut: 'STOCK' } }),
       prisma.versement.aggregate({
+        where: { statut: 'PENDING', ...(pdvFilter && { pdv_id: pdvFilter }) },
+        _sum: { montant: true },
+        _count: true,
+      }),
+      prisma.encaissement.aggregate({
         where: { statut: 'PENDING', ...(pdvFilter && { pdv_id: pdvFilter }) },
         _sum: { montant: true },
         _count: true,
@@ -56,6 +68,22 @@ export async function getKpis(req: AuthenticatedRequest, res: Response, next: Ne
         orderBy: { created_at: 'desc' },
         include: { pdv: { select: { name: true, code: true } } },
       }),
+      prisma.encaissement.aggregate({
+        where: {
+          statut: 'VALIDATED',
+          created_at: { gte: lastMonthStart, lt: lastMonthEnd },
+          ...(pdvFilter && { pdv_id: pdvFilter }),
+        },
+        _sum: { montant: true },
+      }),
+      prisma.encaissement.aggregate({
+        where: {
+          statut: 'VALIDATED',
+          created_at: { gte: thisMonthStart },
+          ...(pdvFilter && { pdv_id: pdvFilter }),
+        },
+        _sum: { montant: true },
+      }),
     ]);
 
     res.status(200).json({
@@ -70,6 +98,14 @@ export async function getKpis(req: AuthenticatedRequest, res: Response, next: Ne
         versements_en_attente: {
           montant: versementsEnAttente._sum.montant ?? 0,
           count: versementsEnAttente._count,
+        },
+        encaissements_en_attente: {
+          montant: encaissementsEnAttente._sum.montant ?? 0,
+          count: encaissementsEnAttente._count,
+        },
+        evolution_ca: {
+          mois_courant: Number(encaissementsMoisCourant._sum.montant ?? 0),
+          mois_precedent: Number(encaissementsMoisPrecedent._sum.montant ?? 0),
         },
         objectif_recrutement: {
           recrutes: recrutementsMois,
@@ -151,6 +187,82 @@ export async function getCharts(req: AuthenticatedRequest, res: Response, next: 
     res.status(200).json({
       success: true,
       data: { monthly, byFormule, topPdvs },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getMonthlyReport(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const periode = (req.query.periode as string) ?? `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+    const [year, month] = periode.split('-').map(Number);
+    const start = new Date(year, month - 1, 1);
+    const end = new Date(year, month, 1);
+
+    const [
+      encaissements,
+      versements,
+      nouveauxAbonnes,
+      topPdvsRaw,
+      byFormule,
+      byMode,
+    ] = await Promise.all([
+      prisma.encaissement.aggregate({
+        where: { statut: 'VALIDATED', created_at: { gte: start, lt: end } },
+        _sum: { montant: true },
+        _count: true,
+      }),
+      prisma.versement.aggregate({
+        where: { statut: 'CONFIRMED', created_at: { gte: start, lt: end } },
+        _sum: { montant: true },
+        _count: true,
+      }),
+      prisma.subscriber.count({
+        where: { created_at: { gte: start, lt: end } },
+      }),
+      prisma.encaissement.groupBy({
+        by: ['pdv_id'],
+        where: { statut: 'VALIDATED', created_at: { gte: start, lt: end } },
+        _sum: { montant: true },
+        _count: true,
+        orderBy: { _sum: { montant: 'desc' } },
+        take: 10,
+      }),
+      prisma.encaissement.groupBy({
+        by: ['formule'],
+        where: { statut: 'VALIDATED', created_at: { gte: start, lt: end } },
+        _sum: { montant: true },
+        _count: true,
+      }),
+      prisma.encaissement.groupBy({
+        by: ['mode_paiement'],
+        where: { statut: 'VALIDATED', created_at: { gte: start, lt: end } },
+        _sum: { montant: true },
+        _count: true,
+      }),
+    ]);
+
+    const pdvIds = topPdvsRaw.map((g) => g.pdv_id);
+    const pdvNames = await prisma.pDV.findMany({ where: { id: { in: pdvIds } }, select: { id: true, name: true, code: true } });
+    const pdvMap = new Map(pdvNames.map((p) => [p.id, p]));
+    const topPdvs = topPdvsRaw.map((g) => ({
+      pdv: pdvMap.get(g.pdv_id) ?? { id: g.pdv_id, name: 'Inconnu', code: '—' },
+      montant: Number(g._sum.montant ?? 0),
+      count: g._count,
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: {
+        periode,
+        encaissements: { montant: Number(encaissements._sum.montant ?? 0), count: encaissements._count },
+        versements: { montant: Number(versements._sum.montant ?? 0), count: versements._count },
+        nouveaux_abonnes: nouveauxAbonnes,
+        top_pdvs: topPdvs,
+        by_formule: byFormule.map((f) => ({ formule: f.formule, montant: Number(f._sum.montant ?? 0), count: f._count })),
+        by_mode: byMode.map((m) => ({ mode: m.mode_paiement, montant: Number(m._sum.montant ?? 0), count: m._count })),
+      },
     });
   } catch (err) {
     next(err);

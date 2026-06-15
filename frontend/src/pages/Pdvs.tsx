@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import DataTable, { Column } from '../components/DataTable';
 import Modal from '../components/Modal';
@@ -32,6 +33,7 @@ const EMPTY = { code: '', name: '', type: 'PDV', secteur: '', region: '', phone:
 
 export default function Pdvs() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const canCreate = user?.role === 'SUPER' || user?.role === 'ADMIN';
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -88,6 +90,14 @@ export default function Pdvs() {
             </select>
           </div>
         }
+        rowActions={(row) => (
+          <button
+            onClick={() => navigate(`/pdvs/${row.id}`)}
+            className="rounded px-2 py-1 text-xs text-sendistri-green hover:underline"
+          >
+            Détail →
+          </button>
+        )}
         toolbar={
           canCreate ? (
             <button

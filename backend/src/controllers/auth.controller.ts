@@ -4,6 +4,8 @@ import { comparePassword, hashPassword, hashToken, generateSecureToken } from '.
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt';
 import { AuthenticatedRequest } from '../types';
 import { env } from '../config/env';
+import speakeasy from 'speakeasy';
+import QRCode from 'qrcode';
 
 const COOKIE_NAME = 'refreshToken';
 const COOKIE_OPTS = {
@@ -27,6 +29,18 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
     const valid = await comparePassword(password, user.password_hash);
     if (!valid) {
       res.status(401).json({ success: false, message: 'Invalid credentials.' });
+      return;
+    }
+
+    // If 2FA is enabled, return a temporary signal requiring TOTP
+    if (user.twofa_enabled && user.twofa_secret) {
+      // Issue a short-lived pre-auth token (signed as access token but role is special)
+      const preToken = signAccessToken({
+        userId: user.id,
+        role: '__2FA_PENDING__' as import('../types').UserRole,
+        pdvId: undefined,
+      });
+      res.status(200).json({ success: true, requiresTwoFa: true, preToken });
       return;
     }
 
@@ -130,6 +144,97 @@ export async function me(req: AuthenticatedRequest, res: Response, next: NextFun
       return;
     }
     res.status(200).json({ success: true, data: user });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function verifyTwoFa(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { preToken, code } = req.body as { preToken: string; code: string };
+    let payload: import('../types').JwtPayload;
+    try {
+      payload = (await import('../utils/jwt')).verifyAccessToken(preToken);
+    } catch {
+      res.status(401).json({ success: false, message: 'Invalid or expired pre-auth token.' });
+      return;
+    }
+    if ((payload.role as string) !== '__2FA_PENDING__') {
+      res.status(401).json({ success: false, message: 'Invalid pre-auth token.' });
+      return;
+    }
+    const user = await prisma.user.findUnique({ where: { id: payload.userId } });
+    if (!user || !user.twofa_enabled || !user.twofa_secret) {
+      res.status(401).json({ success: false, message: 'Invalid request.' });
+      return;
+    }
+    const valid = speakeasy.totp.verify({ secret: user.twofa_secret, encoding: 'base32', token: code, window: 1 });
+    if (!valid) {
+      res.status(401).json({ success: false, message: 'Code 2FA incorrect.' });
+      return;
+    }
+    const fullPayload = { userId: user.id, role: user.role as import('../types').UserRole, pdvId: user.pdv_id ?? undefined };
+    const accessToken = signAccessToken(fullPayload);
+    const rawRefresh = generateSecureToken();
+    const tokenHash = hashToken(rawRefresh);
+    await prisma.$transaction([
+      prisma.refreshToken.create({
+        data: { user_id: user.id, token_hash: tokenHash, expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) },
+      }),
+      prisma.user.update({ where: { id: user.id }, data: { last_login: new Date() } }),
+    ]);
+    res.cookie(COOKIE_NAME, rawRefresh, COOKIE_OPTS);
+    res.status(200).json({ success: true, data: { accessToken, user: { id: user.id, email: user.email, role: user.role, pdvId: user.pdv_id } } });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function setup2fa(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
+    if (!user) { res.status(404).json({ success: false, message: 'User not found.' }); return; }
+    if (user.twofa_enabled) {
+      res.status(400).json({ success: false, message: '2FA déjà activé. Désactivez-le d\'abord.' });
+      return;
+    }
+    const gen = speakeasy.generateSecret({ length: 20, name: `SENDISTRI:${user.email}`, issuer: 'SENDISTRI' });
+    const secret = gen.base32;
+    const otpauth = gen.otpauth_url ?? speakeasy.otpauthURL({ secret, label: `SENDISTRI:${user.email}`, issuer: 'SENDISTRI', encoding: 'base32' });
+    const qrDataUrl = await QRCode.toDataURL(otpauth);
+    await prisma.user.update({ where: { id: user.id }, data: { twofa_secret: secret } });
+    res.status(200).json({ success: true, data: { secret, qrDataUrl } });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function enable2fa(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { code } = req.body as { code: string };
+    const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
+    if (!user || !user.twofa_secret) {
+      res.status(400).json({ success: false, message: 'Lancez d\'abord la configuration 2FA.' });
+      return;
+    }
+    const valid = speakeasy.totp.verify({ secret: user.twofa_secret, encoding: 'base32', token: code, window: 1 });
+    if (!valid) { res.status(400).json({ success: false, message: 'Code incorrect.' }); return; }
+    await prisma.user.update({ where: { id: user.id }, data: { twofa_enabled: true } });
+    res.status(200).json({ success: true, message: '2FA activé avec succès.' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function disable2fa(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { password } = req.body as { password: string };
+    const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
+    if (!user) { res.status(404).json({ success: false, message: 'User not found.' }); return; }
+    const valid = await comparePassword(password, user.password_hash);
+    if (!valid) { res.status(400).json({ success: false, message: 'Mot de passe incorrect.' }); return; }
+    await prisma.user.update({ where: { id: user.id }, data: { twofa_enabled: false, twofa_secret: null } });
+    res.status(200).json({ success: true, message: '2FA désactivé.' });
   } catch (err) {
     next(err);
   }

@@ -154,6 +154,36 @@ export async function exportEncaissementsCsv(req: AuthenticatedRequest, res: Res
   }
 }
 
+export async function bulkValidateEncaissements(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { ids, statut } = req.body as { ids: string[]; statut: 'VALIDATED' | 'REJECTED' };
+    if (!Array.isArray(ids) || ids.length === 0) {
+      res.status(400).json({ success: false, message: 'ids must be a non-empty array.' });
+      return;
+    }
+
+    const pending = await prisma.encaissement.findMany({
+      where: { id: { in: ids }, statut: 'PENDING' },
+      select: { id: true },
+    });
+    const validIds = pending.map((e) => e.id);
+
+    if (validIds.length === 0) {
+      res.status(400).json({ success: false, message: 'No PENDING encaissements found for given ids.' });
+      return;
+    }
+
+    await prisma.encaissement.updateMany({
+      where: { id: { in: validIds } },
+      data: { statut, validated_by: req.user.userId, validated_at: new Date() },
+    });
+
+    res.status(200).json({ success: true, data: { updated: validIds.length, skipped: ids.length - validIds.length } });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function validateEncaissement(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const { statut } = req.body as { statut: 'VALIDATED' | 'REJECTED' };

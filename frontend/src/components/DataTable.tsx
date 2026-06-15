@@ -20,6 +20,9 @@ interface Props<T> {
   rowActions?: (row: T) => React.ReactNode;
   extraParams?: Record<string, string | number | undefined>;
   filters?: React.ReactNode;
+  selectable?: boolean;
+  onSelectionChange?: (ids: string[]) => void;
+  bulkActions?: (selectedIds: string[], clearSelection: () => void) => React.ReactNode;
 }
 
 export default function DataTable<T extends { id: string }>({
@@ -31,10 +34,37 @@ export default function DataTable<T extends { id: string }>({
   rowActions,
   extraParams,
   filters,
+  selectable,
+  onSelectionChange,
+  bulkActions,
 }: Props<T>) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debounced, setDebounced] = useState('');
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  function toggleRow(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      onSelectionChange?.([...next]);
+      return next;
+    });
+  }
+
+  function toggleAll(ids: string[]) {
+    setSelected((prev) => {
+      const allSelected = ids.every((id) => prev.has(id));
+      const next = allSelected ? new Set<string>() : new Set(ids);
+      onSelectionChange?.([...next]);
+      return next;
+    });
+  }
+
+  function clearSelection() {
+    setSelected(new Set());
+    onSelectionChange?.([]);
+  }
 
   // Reset to page 1 when filters change
   const stableParams = JSON.stringify(extraParams);
@@ -92,11 +122,28 @@ export default function DataTable<T extends { id: string }>({
 
       {filters && <div className="flex flex-wrap items-end gap-3 rounded-xl bg-white p-4 shadow-sm">{filters}</div>}
 
+      {selectable && selected.size > 0 && bulkActions && (
+        <div className="flex items-center gap-3 rounded-xl bg-sendistri-dark px-4 py-3 text-white">
+          <span className="text-sm">{selected.size} sélectionné(s)</span>
+          <div className="ml-auto flex gap-2">{bulkActions([...selected], clearSelection)}</div>
+        </div>
+      )}
+
       <div className="overflow-hidden rounded-xl bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[600px] text-sm">
             <thead>
               <tr className="border-b bg-gray-50 text-left text-gray-500">
+                {selectable && (
+                  <th className="px-4 py-3 w-8">
+                    <input
+                      type="checkbox"
+                      checked={rows.length > 0 && rows.every((r) => selected.has(r.id))}
+                      onChange={() => toggleAll(rows.map((r) => r.id))}
+                      className="rounded"
+                    />
+                  </th>
+                )}
                 {columns.map((c) => (
                   <th key={c.key} className={`px-4 py-3 ${c.align === 'right' ? 'text-right' : ''} ${c.hideOnMobile ? 'hidden sm:table-cell' : ''}`}>
                     {c.header}
@@ -108,27 +155,40 @@ export default function DataTable<T extends { id: string }>({
             <tbody>
               {isLoading && (
                 <tr>
-                  <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-4 py-6 text-center text-gray-400">
+                  <td colSpan={columns.length + (rowActions ? 1 : 0) + (selectable ? 1 : 0)} className="px-4 py-6 text-center text-gray-400">
                     Chargement…
                   </td>
                 </tr>
               )}
               {isError && (
                 <tr>
-                  <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-4 py-6 text-center text-sendistri-red">
+                  <td colSpan={columns.length + (rowActions ? 1 : 0) + (selectable ? 1 : 0)} className="px-4 py-6 text-center text-sendistri-red">
                     Erreur de chargement
                   </td>
                 </tr>
               )}
               {!isLoading && rows.length === 0 && (
                 <tr>
-                  <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-4 py-6 text-center text-gray-400">
+                  <td colSpan={columns.length + (rowActions ? 1 : 0) + (selectable ? 1 : 0)} className="px-4 py-6 text-center text-gray-400">
                     Aucun résultat
                   </td>
                 </tr>
               )}
               {rows.map((row) => (
-                <tr key={row.id} className="border-b last:border-0 hover:bg-gray-50">
+                <tr
+                  key={row.id}
+                  className={`border-b last:border-0 hover:bg-gray-50 ${selected.has(row.id) ? 'bg-emerald-50' : ''}`}
+                >
+                  {selectable && (
+                    <td className="px-4 py-3 w-8">
+                      <input
+                        type="checkbox"
+                        checked={selected.has(row.id)}
+                        onChange={() => toggleRow(row.id)}
+                        className="rounded"
+                      />
+                    </td>
+                  )}
                   {columns.map((c) => (
                     <td key={c.key} className={`px-4 py-3 ${c.align === 'right' ? 'text-right' : ''} ${c.hideOnMobile ? 'hidden sm:table-cell' : ''}`}>
                       {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? '—')}

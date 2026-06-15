@@ -34,6 +34,8 @@ export interface Kpis {
   abonnes_actifs: number;
   decodeurs_stock: number;
   versements_en_attente: { montant: number; count: number };
+  encaissements_en_attente: { montant: number; count: number };
+  evolution_ca: { mois_courant: number; mois_precedent: number };
   objectif_recrutement: { recrutes: number; cible: number; taux: number };
   recent_encaissements: RecentEncaissement[];
 }
