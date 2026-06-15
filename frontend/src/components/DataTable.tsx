@@ -15,6 +15,8 @@ interface Props<T> {
   endpoint: string;
   columns: Column<T>[];
   searchable?: boolean;
+  toolbar?: React.ReactNode;
+  rowActions?: (row: T) => React.ReactNode;
 }
 
 export default function DataTable<T extends { id: string }>({
@@ -22,6 +24,8 @@ export default function DataTable<T extends { id: string }>({
   endpoint,
   columns,
   searchable = true,
+  toolbar,
+  rowActions,
 }: Props<T>) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -50,23 +54,26 @@ export default function DataTable<T extends { id: string }>({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-sendistri-dark">{title}</h1>
-        {searchable && (
-          <div className="flex gap-2">
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && applySearch()}
-              placeholder="Rechercher…"
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-sendistri-green"
-            />
-            <button
-              onClick={applySearch}
-              className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-            >
-              Rechercher
-            </button>
-          </div>
-        )}
+        <div className="flex gap-2">
+          {searchable && (
+            <>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && applySearch()}
+                placeholder="Rechercher…"
+                className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-sendistri-green"
+              />
+              <button
+                onClick={applySearch}
+                className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              >
+                Rechercher
+              </button>
+            </>
+          )}
+          {toolbar}
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-xl bg-white shadow-sm">
@@ -78,26 +85,27 @@ export default function DataTable<T extends { id: string }>({
                   {c.header}
                 </th>
               ))}
+              {rowActions && <th className="px-4 py-3 text-right">Actions</th>}
             </tr>
           </thead>
           <tbody>
             {isLoading && (
               <tr>
-                <td colSpan={columns.length} className="px-4 py-6 text-center text-gray-400">
+                <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-4 py-6 text-center text-gray-400">
                   Chargement…
                 </td>
               </tr>
             )}
             {isError && (
               <tr>
-                <td colSpan={columns.length} className="px-4 py-6 text-center text-sendistri-red">
+                <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-4 py-6 text-center text-sendistri-red">
                   Erreur de chargement
                 </td>
               </tr>
             )}
             {!isLoading && rows.length === 0 && (
               <tr>
-                <td colSpan={columns.length} className="px-4 py-6 text-center text-gray-400">
+                <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-4 py-6 text-center text-gray-400">
                   Aucun résultat
                 </td>
               </tr>
@@ -109,6 +117,7 @@ export default function DataTable<T extends { id: string }>({
                     {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? '—')}
                   </td>
                 ))}
+                {rowActions && <td className="px-4 py-3 text-right">{rowActions(row)}</td>}
               </tr>
             ))}
           </tbody>
