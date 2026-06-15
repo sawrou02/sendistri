@@ -111,6 +111,17 @@ export default function Encaissements() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ ...EMPTY });
   const [error, setError] = useState('');
+  const [filterStatut, setFilterStatut] = useState('');
+  const [filterType, setFilterType] = useState('');
+  const [filterFrom, setFilterFrom] = useState('');
+  const [filterTo, setFilterTo] = useState('');
+
+  const extraParams = {
+    ...(filterStatut && { statut: filterStatut }),
+    ...(filterType && { type: filterType }),
+    ...(filterFrom && { from: filterFrom }),
+    ...(filterTo && { to: filterTo }),
+  };
 
   const set = (k: string) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -153,6 +164,46 @@ export default function Encaissements() {
         endpoint="/encaissements"
         columns={columns}
         searchable={false}
+        extraParams={extraParams}
+        filters={
+          <>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Statut</label>
+              <select value={filterStatut} onChange={(e) => setFilterStatut(e.target.value)}
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none">
+                <option value="">Tous</option>
+                <option value="PENDING">En attente</option>
+                <option value="VALIDATED">Validé</option>
+                <option value="REJECTED">Rejeté</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Type</label>
+              <select value={filterType} onChange={(e) => setFilterType(e.target.value)}
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none">
+                <option value="">Tous</option>
+                <option value="RECRUTEMENT">Recrutement</option>
+                <option value="REABONNEMENT">Réabonnement</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Du</label>
+              <input type="date" value={filterFrom} onChange={(e) => setFilterFrom(e.target.value)}
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Au</label>
+              <input type="date" value={filterTo} onChange={(e) => setFilterTo(e.target.value)}
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none" />
+            </div>
+            {(filterStatut || filterType || filterFrom || filterTo) && (
+              <button onClick={() => { setFilterStatut(''); setFilterType(''); setFilterFrom(''); setFilterTo(''); }}
+                className="self-end rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-500 hover:bg-gray-50">
+                Effacer
+              </button>
+            )}
+          </>
+        }
         toolbar={
           <div className="flex gap-2">
             {canValidate && (

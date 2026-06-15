@@ -14,7 +14,8 @@ interface Versement {
   banque: string;
   bordereau: string;
   statut: string;
-  pdv?: { name: string };
+  created_at: string;
+  pdv?: { name: string; code: string } | null;
 }
 
 const fmt = (n: number) => new Intl.NumberFormat('fr-FR').format(n);
@@ -29,7 +30,8 @@ const statutBadge = (s: string) => {
 };
 
 const columns: Column<Versement>[] = [
-  { key: 'pdv', header: 'PDV', render: (r) => r.pdv?.name ?? '—' },
+  { key: 'created_at', header: 'Date', render: (r) => new Date(r.created_at).toLocaleDateString('fr-FR') },
+  { key: 'pdv', header: 'PDV', render: (r) => r.pdv ? `${r.pdv.code} — ${r.pdv.name}` : '—' },
   { key: 'banque', header: 'Banque' },
   { key: 'bordereau', header: 'Bordereau' },
   { key: 'montant', header: 'Montant', align: 'right', render: (r) => `${fmt(r.montant)} F` },
@@ -45,6 +47,15 @@ export default function Versements() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ ...EMPTY });
   const [error, setError] = useState('');
+  const [filterStatut, setFilterStatut] = useState('');
+  const [filterFrom, setFilterFrom] = useState('');
+  const [filterTo, setFilterTo] = useState('');
+
+  const extraParams = {
+    ...(filterStatut && { statut: filterStatut }),
+    ...(filterFrom && { from: filterFrom }),
+    ...(filterTo && { to: filterTo }),
+  };
 
   const set = (k: string) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['/versements'] });
@@ -63,12 +74,7 @@ export default function Versements() {
         bordereau: form.bordereau,
       });
     },
-    onSuccess: () => {
-      invalidate();
-      setOpen(false);
-      setForm({ ...EMPTY });
-      setError('');
-    },
+    onSuccess: () => { invalidate(); setOpen(false); setForm({ ...EMPTY }); setError(''); },
     onError: (err) => {
       const ax = err as AxiosError<{ message?: string }>;
       setError(ax.response?.data?.message ?? 'Erreur lors de la création.');
@@ -89,6 +95,37 @@ export default function Versements() {
         endpoint="/versements"
         columns={columns}
         searchable={false}
+        extraParams={extraParams}
+        filters={
+          <>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Statut</label>
+              <select value={filterStatut} onChange={(e) => setFilterStatut(e.target.value)}
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none">
+                <option value="">Tous</option>
+                <option value="PENDING">En attente</option>
+                <option value="CONFIRMED">Confirmé</option>
+                <option value="REJECTED">Rejeté</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Du</label>
+              <input type="date" value={filterFrom} onChange={(e) => setFilterFrom(e.target.value)}
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Au</label>
+              <input type="date" value={filterTo} onChange={(e) => setFilterTo(e.target.value)}
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none" />
+            </div>
+            {(filterStatut || filterFrom || filterTo) && (
+              <button onClick={() => { setFilterStatut(''); setFilterFrom(''); setFilterTo(''); }}
+                className="self-end rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-500 hover:bg-gray-50">
+                Effacer
+              </button>
+            )}
+          </>
+        }
         toolbar={
           <button
             onClick={() => setOpen(true)}
@@ -102,16 +139,12 @@ export default function Versements() {
             ? (row) =>
                 row.statut === 'PENDING' ? (
                   <div className="flex justify-end gap-2">
-                    <button
-                      onClick={() => decisionMutation.mutate({ id: row.id, statut: 'CONFIRMED' })}
-                      className="rounded bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-200"
-                    >
+                    <button onClick={() => decisionMutation.mutate({ id: row.id, statut: 'CONFIRMED' })}
+                      className="rounded bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-200">
                       Confirmer
                     </button>
-                    <button
-                      onClick={() => decisionMutation.mutate({ id: row.id, statut: 'REJECTED' })}
-                      className="rounded bg-red-100 px-2 py-1 text-xs font-medium text-sendistri-red hover:bg-red-200"
-                    >
+                    <button onClick={() => decisionMutation.mutate({ id: row.id, statut: 'REJECTED' })}
+                      className="rounded bg-red-100 px-2 py-1 text-xs font-medium text-sendistri-red hover:bg-red-200">
                       Rejeter
                     </button>
                   </div>
@@ -124,22 +157,10 @@ export default function Versements() {
 
       <Modal open={open} title="Nouveau versement" onClose={() => setOpen(false)}>
         {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-sendistri-red">{error}</div>}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            createMutation.mutate();
-          }}
-          className="grid grid-cols-2 gap-4"
-        >
+        <form onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }} className="grid grid-cols-2 gap-4">
           {user?.role !== 'PDV_OPERATOR' && (
-            <SelectField
-              label="PDV"
-              name="pdvId"
-              value={form.pdvId}
-              onChange={set('pdvId')}
-              required
-              options={(pdvs ?? []).map((p) => ({ value: p.id, label: `${p.code} — ${p.name}` }))}
-            />
+            <SelectField label="PDV" name="pdvId" value={form.pdvId} onChange={set('pdvId')} required
+              options={(pdvs ?? []).map((p) => ({ value: p.id, label: `${p.code} — ${p.name}` }))} />
           )}
           <TextField label="Banque" name="banque" value={form.banque} onChange={set('banque')} required />
           <TextField label="N° Bordereau" name="bordereau" value={form.bordereau} onChange={set('bordereau')} required />

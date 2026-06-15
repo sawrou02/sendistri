@@ -122,6 +122,14 @@ export default function Commissions() {
   const [calcError, setCalcError] = useState('');
   const [calcResult, setCalcResult] = useState<string | null>(null);
 
+  const [filterStatut, setFilterStatut] = useState('');
+  const [filterPeriode, setFilterPeriode] = useState('');
+
+  const extraParams = {
+    ...(filterStatut && { statut: filterStatut }),
+    ...(filterPeriode && { periode: filterPeriode }),
+  };
+
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['/commissions'] });
 
   const calculateMutation = useMutation({
@@ -151,6 +159,33 @@ export default function Commissions() {
         endpoint="/commissions"
         columns={columns}
         searchable={false}
+        extraParams={extraParams}
+        filters={
+          <>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Statut</label>
+              <select value={filterStatut} onChange={(e) => setFilterStatut(e.target.value)}
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none">
+                <option value="">Tous</option>
+                <option value="CALCULATED">Calculé</option>
+                <option value="VALIDATED">Validé</option>
+                <option value="PAID">Payé</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Période (AAAA-MM)</label>
+              <input type="month" value={filterPeriode}
+                onChange={(e) => setFilterPeriode(e.target.value ? e.target.value.slice(0, 7) : '')}
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none" />
+            </div>
+            {(filterStatut || filterPeriode) && (
+              <button onClick={() => { setFilterStatut(''); setFilterPeriode(''); }}
+                className="self-end rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-500 hover:bg-gray-50">
+                Effacer
+              </button>
+            )}
+          </>
+        }
         toolbar={
           <div className="flex gap-2">
             <button

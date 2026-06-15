@@ -17,6 +17,8 @@ interface Props<T> {
   searchable?: boolean;
   toolbar?: React.ReactNode;
   rowActions?: (row: T) => React.ReactNode;
+  extraParams?: Record<string, string | number | undefined>;
+  filters?: React.ReactNode;
 }
 
 export default function DataTable<T extends { id: string }>({
@@ -26,16 +28,27 @@ export default function DataTable<T extends { id: string }>({
   searchable = true,
   toolbar,
   rowActions,
+  extraParams,
+  filters,
 }: Props<T>) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debounced, setDebounced] = useState('');
 
+  // Reset to page 1 when filters change
+  const stableParams = JSON.stringify(extraParams);
+  useState(() => { setPage(1); });
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: [endpoint, page, debounced],
+    queryKey: [endpoint, page, debounced, stableParams],
     queryFn: async () => {
       const res = await api.get<{ data: T[]; meta?: PaginationMeta }>(endpoint, {
-        params: { page, limit: 20, ...(debounced && { search: debounced }) },
+        params: {
+          page,
+          limit: 20,
+          ...(debounced && { search: debounced }),
+          ...extraParams,
+        },
       });
       return res.data;
     },
@@ -75,6 +88,8 @@ export default function DataTable<T extends { id: string }>({
           {toolbar}
         </div>
       </div>
+
+      {filters && <div className="flex flex-wrap items-end gap-3 rounded-xl bg-white p-4 shadow-sm">{filters}</div>}
 
       <div className="overflow-hidden rounded-xl bg-white shadow-sm">
         <table className="w-full text-sm">
