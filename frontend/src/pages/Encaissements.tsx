@@ -7,17 +7,7 @@ import { TextField, SelectField, FormActions } from '../components/Field';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import type { Pdv } from '../types';
-
-function downloadCsv() {
-  api.get('/encaissements/export/csv', { responseType: 'blob' }).then((res) => {
-    const url = URL.createObjectURL(new Blob([res.data], { type: 'text/csv' }));
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `encaissements-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  });
-}
+import { downloadPdf, downloadCsvData } from '../utils/export';
 
 interface Encaissement {
   id: string;
@@ -26,11 +16,12 @@ interface Encaissement {
   montant: number;
   mode_paiement: string;
   statut: string;
-  pdv?: { name: string };
+  created_at: string;
+  pdv?: { name: string; code: string } | null;
+  subscriber?: { nom: string; prenom: string } | null;
 }
 
 const fmt = (n: number) => new Intl.NumberFormat('fr-FR').format(n);
-
 const FORMULES = ['ACCESS', 'EVASION', 'EVASION_PLUS', 'TOUT_CANAL', 'PRESTIGE'];
 const MODES = ['WAVE', 'ORANGE_MONEY', 'CASH', 'CHEQUE'];
 
@@ -44,7 +35,8 @@ const statutBadge = (s: string) => {
 };
 
 const columns: Column<Encaissement>[] = [
-  { key: 'pdv', header: 'PDV', render: (r) => r.pdv?.name ?? '—' },
+  { key: 'created_at', header: 'Date', render: (r) => new Date(r.created_at).toLocaleDateString('fr-FR') },
+  { key: 'pdv', header: 'PDV', render: (r) => r.pdv ? `${r.pdv.code} — ${r.pdv.name}` : '—' },
   { key: 'type', header: 'Type' },
   { key: 'formule', header: 'Formule' },
   { key: 'mode_paiement', header: 'Mode' },
@@ -53,6 +45,64 @@ const columns: Column<Encaissement>[] = [
 ];
 
 const EMPTY = { pdvId: '', type: 'REABONNEMENT', formule: '', duree: '1', montant: '', modePaiement: '' };
+
+async function fetchAllEncaissements(): Promise<Encaissement[]> {
+  const res = await api.get<{ data: Encaissement[] }>('/encaissements', { params: { limit: 5000, page: 1 } });
+  return res.data.data;
+}
+
+async function handleExportPdf() {
+  const rows = await fetchAllEncaissements();
+  const total = rows.reduce((s, r) => s + Number(r.montant), 0);
+  downloadPdf({
+    title: 'Rapport des Encaissements',
+    subtitle: `Exporté le ${new Date().toLocaleDateString('fr-FR')} — ${rows.length} entrée(s)`,
+    filename: `encaissements-${new Date().toISOString().slice(0, 10)}.pdf`,
+    columns: [
+      { header: 'Date', dataKey: 'date', width: 22 },
+      { header: 'PDV', dataKey: 'pdv', width: 45 },
+      { header: 'Type', dataKey: 'type', width: 28 },
+      { header: 'Formule', dataKey: 'formule', width: 28 },
+      { header: 'Mode', dataKey: 'mode', width: 28 },
+      { header: 'Montant (F)', dataKey: 'montant', align: 'right', width: 30 },
+      { header: 'Statut', dataKey: 'statut', width: 22 },
+      { header: 'Abonné', dataKey: 'subscriber', width: 40 },
+    ],
+    rows: rows.map((r) => ({
+      date: new Date(r.created_at).toLocaleDateString('fr-FR'),
+      pdv: r.pdv ? `${r.pdv.code} — ${r.pdv.name}` : '—',
+      type: r.type,
+      formule: r.formule,
+      mode: r.mode_paiement,
+      montant: new Intl.NumberFormat('fr-FR').format(r.montant),
+      statut: r.statut,
+      subscriber: r.subscriber ? `${r.subscriber.prenom} ${r.subscriber.nom}` : '—',
+    })),
+    totals: [
+      { label: 'Total encaissements', value: `${new Intl.NumberFormat('fr-FR').format(total)} F CFA` },
+      { label: 'Nombre d\'entrées', value: String(rows.length) },
+    ],
+  });
+}
+
+async function handleExportCsv() {
+  const rows = await fetchAllEncaissements();
+  downloadCsvData(
+    'Encaissements',
+    ['Date', 'PDV', 'Type', 'Formule', 'Mode de paiement', 'Montant (F)', 'Statut', 'Abonné'],
+    rows.map((r) => [
+      new Date(r.created_at).toLocaleDateString('fr-FR'),
+      r.pdv ? `${r.pdv.code} — ${r.pdv.name}` : '—',
+      r.type,
+      r.formule,
+      r.mode_paiement,
+      r.montant,
+      r.statut,
+      r.subscriber ? `${r.subscriber.prenom} ${r.subscriber.nom}` : '—',
+    ]),
+    `encaissements-${new Date().toISOString().slice(0, 10)}.csv`,
+  );
+}
 
 export default function Encaissements() {
   const { user } = useAuth();
@@ -82,12 +132,7 @@ export default function Encaissements() {
         modePaiement: form.modePaiement,
       });
     },
-    onSuccess: () => {
-      invalidate();
-      setOpen(false);
-      setForm({ ...EMPTY });
-      setError('');
-    },
+    onSuccess: () => { invalidate(); setOpen(false); setForm({ ...EMPTY }); setError(''); },
     onError: (err) => {
       const ax = err as AxiosError<{ message?: string }>;
       setError(ax.response?.data?.message ?? 'Erreur lors de la création.');
@@ -111,12 +156,20 @@ export default function Encaissements() {
         toolbar={
           <div className="flex gap-2">
             {canValidate && (
-              <button
-                onClick={downloadCsv}
-                className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Exporter CSV
-              </button>
+              <>
+                <button
+                  onClick={handleExportCsv}
+                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  ↓ CSV
+                </button>
+                <button
+                  onClick={handleExportPdf}
+                  className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100"
+                >
+                  ↓ PDF
+                </button>
+              </>
             )}
             <button
               onClick={() => setOpen(true)}
@@ -153,52 +206,19 @@ export default function Encaissements() {
 
       <Modal open={open} title="Nouvel encaissement" onClose={() => setOpen(false)}>
         {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-sendistri-red">{error}</div>}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            createMutation.mutate();
-          }}
-          className="grid grid-cols-2 gap-4"
-        >
+        <form onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }} className="grid grid-cols-2 gap-4">
           {user?.role !== 'PDV_OPERATOR' && (
-            <SelectField
-              label="PDV"
-              name="pdvId"
-              value={form.pdvId}
-              onChange={set('pdvId')}
-              required
-              options={(pdvs ?? []).map((p) => ({ value: p.id, label: `${p.code} — ${p.name}` }))}
-            />
+            <SelectField label="PDV" name="pdvId" value={form.pdvId} onChange={set('pdvId')} required
+              options={(pdvs ?? []).map((p) => ({ value: p.id, label: `${p.code} — ${p.name}` }))} />
           )}
-          <SelectField
-            label="Type"
-            name="type"
-            value={form.type}
-            onChange={set('type')}
-            required
-            options={[
-              { value: 'REABONNEMENT', label: 'Réabonnement' },
-              { value: 'RECRUTEMENT', label: 'Recrutement' },
-            ]}
-          />
-          <SelectField
-            label="Formule"
-            name="formule"
-            value={form.formule}
-            onChange={set('formule')}
-            required
-            options={FORMULES.map((f) => ({ value: f, label: f }))}
-          />
+          <SelectField label="Type" name="type" value={form.type} onChange={set('type')} required
+            options={[{ value: 'REABONNEMENT', label: 'Réabonnement' }, { value: 'RECRUTEMENT', label: 'Recrutement' }]} />
+          <SelectField label="Formule" name="formule" value={form.formule} onChange={set('formule')} required
+            options={FORMULES.map((f) => ({ value: f, label: f }))} />
           <TextField label="Durée (mois)" name="duree" type="number" value={form.duree} onChange={set('duree')} required />
           <TextField label="Montant (F)" name="montant" type="number" value={form.montant} onChange={set('montant')} required />
-          <SelectField
-            label="Mode de paiement"
-            name="modePaiement"
-            value={form.modePaiement}
-            onChange={set('modePaiement')}
-            required
-            options={MODES.map((m) => ({ value: m, label: m }))}
-          />
+          <SelectField label="Mode de paiement" name="modePaiement" value={form.modePaiement} onChange={set('modePaiement')} required
+            options={MODES.map((m) => ({ value: m, label: m }))} />
           <div className="col-span-2">
             <FormActions onCancel={() => setOpen(false)} submitting={createMutation.isPending} />
           </div>

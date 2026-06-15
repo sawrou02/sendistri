@@ -5,6 +5,69 @@ import Modal from '../components/Modal';
 import { TextField, FormActions } from '../components/Field';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { downloadPdf, downloadCsvData } from '../utils/export';
+
+interface Commission {
+  id: string;
+  periode: string;
+  montant_base: string;
+  montant_bonus: string;
+  montant_total: string;
+  statut: string;
+  pdv?: { name: string; code: string };
+}
+
+async function fetchAllCommissions(): Promise<Commission[]> {
+  const res = await api.get<{ data: Commission[] }>('/commissions', { params: { limit: 5000 } });
+  return res.data.data;
+}
+
+async function handleExportPdf() {
+  const rows = await fetchAllCommissions();
+  const total = rows.reduce((s, r) => s + Number(r.montant_total), 0);
+  downloadPdf({
+    title: 'Rapport des Commissions',
+    subtitle: `Exporté le ${new Date().toLocaleDateString('fr-FR')} — ${rows.length} entrée(s)`,
+    filename: `commissions-${new Date().toISOString().slice(0, 10)}.pdf`,
+    columns: [
+      { header: 'PDV', dataKey: 'pdv', width: 55 },
+      { header: 'Période', dataKey: 'periode', width: 25 },
+      { header: 'Base comm. (F)', dataKey: 'base', align: 'right', width: 35 },
+      { header: 'Bonus (F)', dataKey: 'bonus', align: 'right', width: 30 },
+      { header: 'Total (F)', dataKey: 'total', align: 'right', width: 35 },
+      { header: 'Statut', dataKey: 'statut', width: 22 },
+    ],
+    rows: rows.map((r) => ({
+      pdv: r.pdv ? `${r.pdv.code} — ${r.pdv.name}` : '—',
+      periode: r.periode,
+      base: new Intl.NumberFormat('fr-FR').format(Number(r.montant_base)),
+      bonus: new Intl.NumberFormat('fr-FR').format(Number(r.montant_bonus)),
+      total: new Intl.NumberFormat('fr-FR').format(Number(r.montant_total)),
+      statut: r.statut,
+    })),
+    totals: [
+      { label: 'Total commissions à verser', value: `${new Intl.NumberFormat('fr-FR').format(total)} F CFA` },
+      { label: 'Nombre de PDVs', value: String(rows.length) },
+    ],
+  });
+}
+
+async function handleExportCsv() {
+  const rows = await fetchAllCommissions();
+  downloadCsvData(
+    'Commissions',
+    ['PDV', 'Période', 'Base comm. (F)', 'Bonus (F)', 'Total (F)', 'Statut'],
+    rows.map((r) => [
+      r.pdv ? `${r.pdv.code} — ${r.pdv.name}` : '—',
+      r.periode,
+      Number(r.montant_base),
+      Number(r.montant_bonus),
+      Number(r.montant_total),
+      r.statut,
+    ]),
+    `commissions-${new Date().toISOString().slice(0, 10)}.csv`,
+  );
+}
 
 interface Commission {
   id: string;
@@ -89,14 +152,28 @@ export default function Commissions() {
         columns={columns}
         searchable={false}
         toolbar={
-          canManage ? (
+          <div className="flex gap-2">
             <button
-              onClick={() => { setCalcOpen(true); setCalcResult(null); setCalcError(''); }}
-              className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+              onClick={handleExportCsv}
+              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
-              Calculer commissions
+              ↓ CSV
             </button>
-          ) : undefined
+            <button
+              onClick={handleExportPdf}
+              className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100"
+            >
+              ↓ PDF
+            </button>
+            {canManage && (
+              <button
+                onClick={() => { setCalcOpen(true); setCalcResult(null); setCalcError(''); }}
+                className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+              >
+                Calculer commissions
+              </button>
+            )}
+          </div>
         }
         rowActions={
           canManage
