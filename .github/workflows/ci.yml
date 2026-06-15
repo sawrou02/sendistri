@@ -34,6 +34,16 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Unit tests
+        run: npm test
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          REDIS_URL: redis://localhost:6379
+          JWT_ACCESS_SECRET: test-access-secret-at-least-32-characters-long
+          JWT_REFRESH_SECRET: test-refresh-secret-at-least-32-characters-long
+          CORS_ORIGIN: http://localhost:5173
+
       - name: Security audit (high severity)
         run: npm audit --audit-level=high
         continue-on-error: true
