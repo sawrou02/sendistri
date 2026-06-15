@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { getKpis, getCharts } from '../controllers/dashboard.controller';
 import { authenticate } from '../middleware/auth';
 
-const router = Router();
+const router: Router = Router();
 router.use(authenticate);
 
 router.get('/kpis', getKpis);

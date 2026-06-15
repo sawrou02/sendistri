@@ -10,7 +10,7 @@ import {
 } from '../schemas/encaissement.schema';
 import { UserRole } from '../types';
 
-const router = Router();
+const router: Router = Router();
 router.use(authenticate);
 
 router.get('/', validateQuery(encaissementQuerySchema), listEncaissements);

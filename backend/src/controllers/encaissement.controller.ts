@@ -65,7 +65,7 @@ export async function createEncaissement(req: AuthenticatedRequest, res: Respons
         duree,
         montant,
         mode_paiement: modePaiement as import('@prisma/client').ModePaiement,
-        options,
+        options: options as import('@prisma/client').Prisma.InputJsonValue | undefined,
         created_by: req.user.userId,
       },
     });

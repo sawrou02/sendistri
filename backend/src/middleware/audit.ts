@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { Prisma } from '@prisma/client';
 import { AuthenticatedRequest } from '../types';
 import { prisma } from '../config/database';
 import { logger } from '../utils/logger';
@@ -36,7 +37,7 @@ export function auditLog(req: Request, res: Response, next: NextFunction): void 
           ip_address: ip,
           user_agent: (req.headers['user-agent'] as string | undefined) ?? null,
           details: req.body && Object.keys(req.body).length > 0
-            ? sanitizeBody(req.body as Record<string, unknown>)
+            ? (sanitizeBody(req.body as Record<string, unknown>) as Prisma.InputJsonValue)
             : undefined,
         },
       })

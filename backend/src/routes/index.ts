@@ -9,7 +9,7 @@ import decoderRoutes from './decoder.routes';
 import dashboardRoutes from './dashboard.routes';
 import commissionRoutes from './commission.routes';
 
-const router = Router();
+const router: Router = Router();
 
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);

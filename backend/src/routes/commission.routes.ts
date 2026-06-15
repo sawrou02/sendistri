@@ -6,7 +6,7 @@ import { authenticate } from '../middleware/auth';
 import { requireRole } from '../middleware/rbac';
 import { UserRole } from '../types';
 
-const router = Router();
+const router: Router = Router();
 router.use(authenticate);
 router.use(requireRole(UserRole.SUPER, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.COMMERCIAL));
 

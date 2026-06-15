@@ -94,36 +94,59 @@ export async function getCharts(req: AuthenticatedRequest, res: Response, next: 
     const today = new Date();
     const twelveMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 11, 1);
 
-    const [monthly, byFormule, topPdvs] = await prisma.$transaction([
-      prisma.encaissement.groupBy({
-        by: ['created_at'],
-        where: {
-          statut: 'VALIDATED',
-          created_at: { gte: twelveMonthsAgo },
-          ...(pdvFilter && { pdv_id: pdvFilter }),
-        },
+    // Raw rows for the last 12 months, grouped by month in JS (groupBy on a
+    // raw timestamp would create one bucket per row, which is useless).
+    const rows = await prisma.encaissement.findMany({
+      where: {
+        statut: 'VALIDATED',
+        created_at: { gte: twelveMonthsAgo },
+        ...(pdvFilter && { pdv_id: pdvFilter }),
+      },
+      select: { montant: true, created_at: true },
+    });
+
+    const monthlyMap = new Map<string, { montant: number; count: number }>();
+    for (const r of rows) {
+      const key = `${r.created_at.getFullYear()}-${String(r.created_at.getMonth() + 1).padStart(2, '0')}`;
+      const entry = monthlyMap.get(key) ?? { montant: 0, count: 0 };
+      entry.montant += Number(r.montant);
+      entry.count += 1;
+      monthlyMap.set(key, entry);
+    }
+    const monthly = Array.from(monthlyMap.entries())
+      .map(([periode, v]) => ({ periode, ...v }))
+      .sort((a, b) => a.periode.localeCompare(b.periode));
+
+    const byFormule = await prisma.encaissement.groupBy({
+      by: ['formule'],
+      where: {
+        statut: 'VALIDATED',
+        ...(pdvFilter && { pdv_id: pdvFilter }),
+      },
+      _sum: { montant: true },
+      _count: true,
+    });
+
+    let topPdvs: Array<{ pdv_id: string; name: string; montant: number }> = [];
+    if (!pdvFilter) {
+      const grouped = await prisma.encaissement.groupBy({
+        by: ['pdv_id'],
+        where: { statut: 'VALIDATED' },
         _sum: { montant: true },
-        _count: true,
-      }),
-      prisma.encaissement.groupBy({
-        by: ['formule'],
-        where: {
-          statut: 'VALIDATED',
-          ...(pdvFilter && { pdv_id: pdvFilter }),
-        },
-        _sum: { montant: true },
-        _count: true,
-      }),
-      pdvFilter
-        ? Promise.resolve([])
-        : prisma.encaissement.groupBy({
-            by: ['pdv_id'],
-            where: { statut: 'VALIDATED' },
-            _sum: { montant: true },
-            orderBy: { _sum: { montant: 'desc' } },
-            take: 10,
-          }),
-    ]);
+        orderBy: { _sum: { montant: 'desc' } },
+        take: 10,
+      });
+      const pdvs = await prisma.pDV.findMany({
+        where: { id: { in: grouped.map((g) => g.pdv_id) } },
+        select: { id: true, name: true },
+      });
+      const nameById = new Map(pdvs.map((p) => [p.id, p.name]));
+      topPdvs = grouped.map((g) => ({
+        pdv_id: g.pdv_id,
+        name: nameById.get(g.pdv_id) ?? 'Inconnu',
+        montant: Number(g._sum.montant ?? 0),
+      }));
+    }
 
     res.status(200).json({
       success: true,

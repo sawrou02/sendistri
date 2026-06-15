@@ -224,8 +224,8 @@ export const getSubscriberSubscriptions = async (req: Request, res: Response): P
     const subscriptions = await prisma.subscription.findMany({
       where: { subscriber_id: id },
       include: {
-        recorded_by: {
-          select: { name: true },
+        recorded_by_user: {
+          select: { id: true, email: true },
         },
       },
       orderBy: { date: 'desc' },

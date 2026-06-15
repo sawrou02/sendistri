@@ -8,7 +8,7 @@ import { validate } from '../middleware/validate';
 import { createUserSchema, updateUserSchema, resetPasswordSchema } from '../schemas/user.schema';
 import { UserRole } from '../types';
 
-const router = Router();
+const router: Router = Router();
 router.use(authenticate);
 
 router.get('/', requireRole(UserRole.SUPER, UserRole.ADMIN), listUsers);
