@@ -1,7 +1,7 @@
 # SENDISTRI - Script de demarrage Windows (sans Docker)
 # Usage : .\start.ps1
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 
 Write-Host ""
 Write-Host "================================================" -ForegroundColor Cyan
@@ -59,9 +59,9 @@ foreach ($p in $pgPaths) {
 Write-Host "Configuration de la base de donnees..." -ForegroundColor Yellow
 $env:PGPASSWORD = "postgres"
 
-# Creer user sendistri
+# Creer user sendistri (ignore si existe deja)
 psql -U postgres -h localhost -c "CREATE USER sendistri WITH PASSWORD 'sendistri';" 2>&1 | Out-Null
-# Creer la base
+# Creer la base (ignore si existe deja)
 psql -U postgres -h localhost -c "CREATE DATABASE sendistri OWNER sendistri;" 2>&1 | Out-Null
 Write-Host "OK : Base de donnees prete" -ForegroundColor Green
 
