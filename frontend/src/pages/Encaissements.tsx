@@ -8,6 +8,17 @@ import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import type { Pdv } from '../types';
 
+function downloadCsv() {
+  api.get('/encaissements/export/csv', { responseType: 'blob' }).then((res) => {
+    const url = URL.createObjectURL(new Blob([res.data], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `encaissements-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
 interface Encaissement {
   id: string;
   type: string;
@@ -98,12 +109,22 @@ export default function Encaissements() {
         columns={columns}
         searchable={false}
         toolbar={
-          <button
-            onClick={() => setOpen(true)}
-            className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-          >
-            + Nouvel encaissement
-          </button>
+          <div className="flex gap-2">
+            {canValidate && (
+              <button
+                onClick={downloadCsv}
+                className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Exporter CSV
+              </button>
+            )}
+            <button
+              onClick={() => setOpen(true)}
+              className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+            >
+              + Nouvel encaissement
+            </button>
+          </div>
         }
         rowActions={
           canValidate

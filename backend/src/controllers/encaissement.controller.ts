@@ -100,6 +100,52 @@ export async function getEncaissement(req: AuthenticatedRequest, res: Response, 
   }
 }
 
+export async function exportEncaissementsCsv(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { pdvId, statut, type, from, to } = req.query as Record<string, string>;
+    const effectivePdvId = req.user.role === UserRole.PDV_OPERATOR ? req.user.pdvId : pdvId;
+
+    const where: Prisma.EncaissementWhereInput = {
+      ...(effectivePdvId && { pdv_id: effectivePdvId }),
+      ...(statut && { statut: statut as import('@prisma/client').EncaissementStatut }),
+      ...(type && { type: type as import('@prisma/client').EncaissementType }),
+      ...((from || to) && {
+        created_at: {
+          ...(from && { gte: new Date(from) }),
+          ...(to && { lte: new Date(to) }),
+        },
+      }),
+    };
+
+    const rows = await prisma.encaissement.findMany({
+      where,
+      include: {
+        pdv: { select: { name: true, code: true } },
+        subscriber: { select: { nom: true, prenom: true, code: true } },
+      },
+      orderBy: { created_at: 'desc' },
+      take: 10000,
+    });
+
+    const header = 'Date,PDV,Type,Formule,Durée,Montant,Mode,Statut,Abonné\n';
+    const lines = rows.map((r) => {
+      const date = r.created_at.toISOString().slice(0, 10);
+      const pdv = `${r.pdv?.code ?? ''} ${r.pdv?.name ?? ''}`.trim();
+      const subscriber = r.subscriber ? `${r.subscriber.prenom} ${r.subscriber.nom}` : '';
+      return [date, pdv, r.type, r.formule, r.duree, r.montant, r.mode_paiement, r.statut, subscriber]
+        .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+        .join(',');
+    });
+
+    const csv = header + lines.join('\n');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="encaissements-${new Date().toISOString().slice(0, 10)}.csv"`);
+    res.status(200).send('﻿' + csv);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function validateEncaissement(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const { statut } = req.body as { statut: 'VALIDATED' | 'REJECTED' };
