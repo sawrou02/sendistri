@@ -23,13 +23,15 @@ const fmtAmount = (n: unknown) =>
 
 export function useToasts() {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const addToast = useCallback((n: SseNotification) => {
     if (n.event === 'connected') return;
+    if (n.event === 'dismissed') return;
     const toast: Toast = { ...n, visible: true };
-    setToasts((prev) => [...prev.slice(-4), toast]); // max 5 toasts
+    setToasts((prev) => [...prev.slice(-4), toast]);
+    setUnreadCount((c) => c + 1);
 
-    // Auto-dismiss after 6s
     setTimeout(() => {
       setToasts((prev) => prev.map((t) => (t.id === toast.id ? { ...t, visible: false } : t)));
       setTimeout(() => {
@@ -38,7 +40,9 @@ export function useToasts() {
     }, 6000);
   }, []);
 
-  return { toasts, addToast };
+  const clearUnread = useCallback(() => setUnreadCount(0), []);
+
+  return { toasts, addToast, unreadCount, clearUnread };
 }
 
 interface Props {

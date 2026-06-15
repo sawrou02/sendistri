@@ -37,6 +37,7 @@ export default function Pdvs() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ ...EMPTY });
   const [error, setError] = useState('');
+  const [filterStatut, setFilterStatut] = useState('');
 
   const set = (k: string) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -71,6 +72,22 @@ export default function Pdvs() {
         title="Points de vente"
         endpoint="/pdvs"
         columns={columns}
+        extraParams={filterStatut ? { statut: filterStatut } : {}}
+        filters={
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-600">Statut</label>
+            <select
+              value={filterStatut}
+              onChange={(e) => setFilterStatut(e.target.value)}
+              className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-sendistri-green"
+            >
+              <option value="">Tous</option>
+              <option value="ACTIVE">Actif</option>
+              <option value="INACTIVE">Inactif</option>
+              <option value="SUSPENDED">Suspendu</option>
+            </select>
+          </div>
+        }
         toolbar={
           canCreate ? (
             <button

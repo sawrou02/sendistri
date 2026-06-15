@@ -8,6 +8,7 @@ import type { Kpis } from '../types';
 interface Charts {
   monthly: { periode: string; montant: number; count: number }[];
   byFormule: { formule: string; _sum: { montant: string | null }; _count: number }[];
+  topPdvs: { pdv_id: string; name: string; montant: number }[];
 }
 
 const COLORS = ['#0E8A4F', '#E2A000', '#D23A2C', '#0B2A1B', '#3B82F6'];
@@ -101,8 +102,34 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="rounded-xl bg-white p-5 shadow-sm">
-        <h2 className="mb-4 font-semibold text-sendistri-dark">Derniers encaissements</h2>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="rounded-xl bg-white p-5 shadow-sm">
+          <h2 className="mb-4 font-semibold text-sendistri-dark">Top PDVs par CA validé</h2>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b text-left text-gray-500">
+                <th className="pb-2">#</th>
+                <th className="pb-2">PDV</th>
+                <th className="pb-2 text-right">CA (F)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(charts?.topPdvs ?? []).map((pdv, i) => (
+                <tr key={pdv.pdv_id} className="border-b last:border-0">
+                  <td className="py-2 text-gray-400">{i + 1}</td>
+                  <td className="py-2 font-medium">{pdv.name}</td>
+                  <td className="py-2 text-right text-sendistri-green font-semibold">{fmt(pdv.montant)}</td>
+                </tr>
+              ))}
+              {(!charts || charts.topPdvs.length === 0) && (
+                <tr><td colSpan={3} className="py-4 text-center text-gray-400">Aucune donnée</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="rounded-xl bg-white p-5 shadow-sm">
+          <h2 className="mb-4 font-semibold text-sendistri-dark">Derniers encaissements</h2>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b text-left text-gray-500">
@@ -130,6 +157,7 @@ export default function Dashboard() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
