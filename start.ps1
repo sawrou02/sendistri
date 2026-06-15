@@ -80,7 +80,7 @@ if (-not $redisInstalled) {
 $redisProc = $null
 if (Get-Command "redis-server" -ErrorAction SilentlyContinue) {
     Write-Host "Demarrage de Redis..." -ForegroundColor Yellow
-    $redisProc = Start-Process -FilePath "redis-server" -PassThru -WindowStyle Hidden
+    $redisProc = Start-Process -FilePath "cmd.exe" -ArgumentList "/c redis-server" -PassThru -WindowStyle Hidden
     Start-Sleep 1
     Write-Host "OK : Redis demarre" -ForegroundColor Green
 } else {
@@ -145,7 +145,7 @@ if ($result -eq "created") {
 }
 
 Write-Host "Demarrage du backend (port 4000)..." -ForegroundColor Yellow
-$backend = Start-Process -FilePath "npm" -ArgumentList "run", "dev" -PassThru -NoNewWindow
+$backend = Start-Process -FilePath "cmd.exe" -ArgumentList "/c npm run dev" -PassThru -NoNewWindow
 
 # Attendre que le backend reponde
 Write-Host "Attente du backend..." -ForegroundColor Yellow
@@ -168,7 +168,7 @@ Set-Location ..\frontend
 npm install --silent
 
 Write-Host "Demarrage du frontend (port 5173)..." -ForegroundColor Yellow
-$frontend = Start-Process -FilePath "npm" -ArgumentList "run", "dev" -PassThru -NoNewWindow
+$frontend = Start-Process -FilePath "cmd.exe" -ArgumentList "/c npm run dev" -PassThru -NoNewWindow
 
 Start-Sleep 3
 
