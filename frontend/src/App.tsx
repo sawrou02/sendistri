@@ -19,7 +19,7 @@ function Protected({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-sendistri-dark text-white">
+      <div className="flex h-screen items-center justify-center text-white" style={{ background: '#0B2A1B' }}>
         Chargement…
       </div>
     );
