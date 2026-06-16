@@ -91,7 +91,8 @@ export default function DataTable<T extends { id: string }>({
     setDebounced(search);
   }
 
-  const rows = data?.data ?? [];
+  // Defensive: only ever map over a real array, even if the API shape drifts.
+  const rows = Array.isArray(data?.data) ? data.data : [];
   const meta = data?.meta;
 
   return (

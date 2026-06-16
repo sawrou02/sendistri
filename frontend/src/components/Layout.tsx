@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import GlobalSearch from './GlobalSearch';
+import ErrorBoundary from './ErrorBoundary';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -35,6 +36,7 @@ const EMPTY_PWD = { currentPassword: '', newPassword: '', confirmPassword: '' };
 export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pwdOpen, setPwdOpen] = useState(false);
   const [pwdForm, setPwdForm] = useState({ ...EMPTY_PWD });
@@ -201,7 +203,9 @@ export default function Layout() {
         </header>
 
         <main className="flex-1 overflow-auto p-4 md:p-8">
-          <Outlet />
+          <ErrorBoundary resetKey={location.pathname}>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
 

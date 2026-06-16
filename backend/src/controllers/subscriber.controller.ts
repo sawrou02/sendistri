@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/database';
 import { logger } from '../utils/logger';
+import { buildPagination } from '../utils/pagination';
 import { AuthenticatedRequest, UserRole } from '../types';
 
 export const getSubscribers = async (req: Request, res: Response): Promise<void> => {
@@ -48,15 +49,8 @@ export const getSubscribers = async (req: Request, res: Response): Promise<void>
 
     res.json({
       success: true,
-      data: {
-        subscribers,
-        pagination: {
-          page,
-          limit: Number(limit),
-          total,
-          totalPages: Math.ceil(total / Number(limit)),
-        },
-      },
+      data: subscribers,
+      meta: buildPagination(total, page, Number(limit)),
     });
   } catch (error) {
     logger.error('Error in getSubscribers:', error);
