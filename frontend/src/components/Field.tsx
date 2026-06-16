@@ -9,17 +9,24 @@ interface BaseProps {
   type?: string;
 }
 
+const labelCls = 'mb-1.5 block text-[12px] font-bold uppercase tracking-[0.03em]';
+const fieldCls = 'w-full rounded-[9px] px-3 py-2.5 text-[13.5px] outline-none transition-colors';
+const fieldStyle: React.CSSProperties = { border: '1px solid var(--border-strong)', background: 'var(--surface)', color: 'var(--text)' };
+
 export function TextField({ label, name, value, onChange, required, type = 'text' }: BaseProps) {
   return (
     <label className="block">
-      <span className="mb-1 block text-sm font-medium text-gray-700">{label}</span>
+      <span className={labelCls} style={{ color: 'var(--text-2)' }}>{label}</span>
       <input
         name={name}
         type={type}
         required={required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-sendistri-green"
+        className={fieldCls}
+        style={fieldStyle}
+        onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--green)')}
+        onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border-strong)')}
       />
     </label>
   );
@@ -32,19 +39,18 @@ interface SelectProps extends Omit<BaseProps, 'type'> {
 export function SelectField({ label, name, value, onChange, required, options }: SelectProps) {
   return (
     <label className="block">
-      <span className="mb-1 block text-sm font-medium text-gray-700">{label}</span>
+      <span className={labelCls} style={{ color: 'var(--text-2)' }}>{label}</span>
       <select
         name={name}
         required={required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-sendistri-green"
+        className={`${fieldCls} cursor-pointer`}
+        style={fieldStyle}
       >
         <option value="">— Sélectionner —</option>
         {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
+          <option key={o.value} value={o.value}>{o.label}</option>
         ))}
       </select>
     </label>
@@ -57,14 +63,16 @@ export function FormActions({ onCancel, submitting, children }: { onCancel: () =
       <button
         type="button"
         onClick={onCancel}
-        className="rounded-lg border px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
+        className="rounded-[9px] px-4 py-2 text-sm font-semibold"
+        style={{ border: '1px solid var(--border-strong)', color: 'var(--text-2)', background: 'var(--surface)' }}
       >
         Annuler
       </button>
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
+        className="rounded-[9px] px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+        style={{ background: 'var(--green)', boxShadow: '0 3px 10px rgba(14,138,79,0.25)' }}
       >
         {children ?? (submitting ? 'Enregistrement…' : 'Enregistrer')}
       </button>
