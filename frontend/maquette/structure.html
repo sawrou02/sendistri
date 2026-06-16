@@ -1,0 +1,558 @@
+
+
+<x-dc>
+
+
+<sc-if value="{{ showLogin }}" hint-placeholder-val="{{ true }}">
+  <div style="min-height:100vh; display:flex; align-items:stretch; background:var(--bg); font-family:var(--font);">
+    <div style="flex:1.1; position:relative; background:linear-gradient(155deg,#0B2A1B 0%,#0E3A24 55%,#0A6B3D 130%); display:flex; flex-direction:column; justify-content:space-between; padding:56px 64px; overflow:hidden;">
+      <div style="position:absolute; right:-120px; top:-80px; width:520px; height:520px; border-radius:50%; background:radial-gradient(circle, rgba(226,160,0,0.16), transparent 62%);"></div>
+      <div style="position:absolute; left:-90px; bottom:-120px; width:420px; height:420px; border-radius:50%; background:radial-gradient(circle, rgba(210,58,44,0.14), transparent 62%);"></div>
+      <div style="position:relative; display:flex; align-items:center; gap:14px;">
+        {{ brandStarLg }}
+        <div style="display:flex; flex-direction:column;">
+          <span style="font-size:24px; font-weight:800; letter-spacing:.04em; color:#fff;">SENDISTRI</span>
+          <span style="font-size:12.5px; font-weight:600; letter-spacing:.18em; color:#7FB394; text-transform:uppercase;">Gestion Commerciale Télécom</span>
+        </div>
+      </div>
+      <div style="position:relative;">
+        <div style="width:64px; height:5px; border-radius:3px; display:flex; overflow:hidden; margin-bottom:26px;">
+          <div style="flex:1; background:#0E8A4F;"></div><div style="flex:1; background:#E2A000;"></div><div style="flex:1; background:#D23A2C;"></div>
+        </div>
+        <h1 style="font-size:40px; line-height:1.12; font-weight:800; color:#fff; margin:0 0 18px; max-width:15ch; letter-spacing:-0.01em;">Tout votre réseau de distribution, en un seul endroit.</h1>
+        <p style="font-size:16px; line-height:1.6; color:#A9CDB6; margin:0; max-width:42ch;">Ventes, réabonnements, stock décodeurs, encaissements et commissions partenaires — pilotés en temps réel, du siège jusqu'au terrain.</p>
+        <div style="display:flex; gap:32px; margin-top:40px;">
+          <div><div style="font-family:var(--mono); font-size:26px; font-weight:600; color:#fff;">1 248</div><div style="font-size:13px; color:#7FB394; font-weight:600;">Points de vente</div></div>
+          <div><div style="font-family:var(--mono); font-size:26px; font-weight:600; color:#fff;">42 880</div><div style="font-size:13px; color:#7FB394; font-weight:600;">Abonnés actifs</div></div>
+          <div><div style="font-family:var(--mono); font-size:26px; font-weight:600; color:#fff;">14</div><div style="font-size:13px; color:#7FB394; font-weight:600;">Modules</div></div>
+        </div>
+      </div>
+      <div style="position:relative; font-size:12.5px; color:#5E8169; font-weight:600;">© 2026 SENDISTRI · Dakar, Sénégal</div>
+    </div>
+    <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:40px;">
+      <div style="width:100%; max-width:380px;">
+        <h2 style="font-size:26px; font-weight:800; margin:0 0 6px; color:var(--text); letter-spacing:-0.01em;">Connexion</h2>
+        <p style="font-size:14.5px; color:var(--text-2); margin:0 0 30px;">Accédez à votre espace de gestion.</p>
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--text-2); margin-bottom:7px;">Email</label>
+        <input value="admin@sendistri.sn" readonly="" style="width:100%; padding:13px 14px; border-radius:10px; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-size:15px; margin-bottom:18px; outline:none;" style-focus="border-color:var(--green);">
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--text-2); margin-bottom:7px;">Mot de passe</label>
+        <input type="password" value="motdepasse123" readonly="" style="width:100%; padding:13px 14px; border-radius:10px; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-size:15px; margin-bottom:10px; outline:none;">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:22px;"><a style="font-size:13px; color:var(--green); font-weight:600; cursor:pointer; text-decoration:none;">Mot de passe oublié ?</a></div>
+        <button onclick="{{ doLogin }}" style="width:100%; padding:14px; border:none; border-radius:10px; background:var(--green); color:#fff; font-size:15.5px; font-weight:700; cursor:pointer; box-shadow:0 6px 18px rgba(14,138,79,0.3); transition:transform .12s, background .15s;" style-hover="background:var(--green-d); transform:translateY(-1px);">Se connecter</button>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:28px; padding:13px 14px; border-radius:10px; background:var(--surface-2); border:1px solid var(--border);">
+          <div style="color:var(--text-3);">{{ iconInfo }}</div>
+          <span style="font-size:12.5px; color:var(--text-2); line-height:1.5;">Démo — cliquez simplement sur <b style="color:var(--text);">Se connecter</b> pour explorer le prototype.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ showApp }}" hint-placeholder-val="{{ true }}">
+  <div data-theme="{{ theme }}" style="display:flex; height:100vh; overflow:hidden; background:var(--bg); font-family:var(--font); color:var(--text);">
+
+    <aside style="width:266px; flex-shrink:0; background:var(--sidebar-bg); display:flex; flex-direction:column; height:100vh;">
+      <div style="padding:18px 18px 16px; display:flex; align-items:center; gap:11px; border-bottom:1px solid rgba(255,255,255,0.07);">
+        {{ brandStarSm }}
+        <div style="display:flex; flex-direction:column; line-height:1.1;">
+          <span style="font-size:17px; font-weight:800; letter-spacing:.03em; color:#fff;">SENDISTRI</span>
+          <span style="font-size:9.5px; font-weight:600; letter-spacing:.16em; color:var(--sidebar-muted); text-transform:uppercase;">ERP Distribution</span>
+        </div>
+      </div>
+      <nav style="flex:1; overflow-y:auto; padding:10px 10px 24px;">
+        <sc-for list="{{ menuSections }}" as="sec" hint-placeholder-count="12">
+          <div style="margin-bottom:1px;">
+            <button onclick="{{ sec.toggle }}" style="{{ sec.headerStyle }}" style-hover="background:rgba(255,255,255,0.05);">
+              <span style="display:flex; align-items:center; gap:11px;"><span style="display:flex; width:18px; color:{{ sec.iconColor }};">{{ sec.icon }}</span><span>{{ sec.label }}</span></span>
+              <span style="display:flex; align-items:center; gap:7px;">
+                <sc-if value="{{ sec.badge }}"><span style="background:var(--red); color:#fff; font-size:10px; font-weight:700; min-width:17px; height:17px; padding:0 5px; border-radius:9px; display:flex; align-items:center; justify-content:center;">{{ sec.badge }}</span></sc-if>
+                <span style="display:flex; color:var(--sidebar-muted);">{{ sec.chevron }}</span>
+              </span>
+            </button>
+            <sc-if value="{{ sec.open }}">
+              <div style="padding:3px 0 6px 4px;">
+                <sc-for list="{{ sec.items }}" as="it" hint-placeholder-count="5">
+                  <button onclick="{{ it.go }}" style="{{ it.style }}" style-hover="color:#fff;">
+                    <span style="display:flex; align-items:center; gap:10px;"><span style="width:5px; height:5px; border-radius:50%; background:{{ it.dot }}; flex-shrink:0;"></span><span style="text-align:left;">{{ it.label }}</span></span>
+                    <sc-if value="{{ it.badge }}"><span style="background:var(--red); color:#fff; font-size:9.5px; font-weight:700; min-width:16px; height:16px; padding:0 5px; border-radius:8px; display:flex; align-items:center; justify-content:center;">{{ it.badge }}</span></sc-if>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </nav>
+      <div style="padding:12px 14px; border-top:1px solid rgba(255,255,255,0.07); position:relative;">
+        <sc-if value="{{ profileOpen }}">
+          <div style="position:absolute; bottom:64px; left:12px; right:12px; background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow-lg); padding:6px; z-index:70;">
+            <div style="font-size:10.5px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.04em; padding:8px 10px 5px;">Changer de profil</div>
+            <sc-for list="{{ roleOptions }}" as="r" hint-placeholder-count="5">
+              <button onclick="{{ r.go }}" style="{{ r.style }}" style-hover="background:var(--surface-2);">
+                <span style="width:28px; height:28px; border-radius:8px; background:{{ r.bg }}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0;">{{ r.init }}</span>
+                <span style="flex:1; text-align:left; min-width:0;"><span style="display:block; font-size:13px; font-weight:600; color:var(--text);">{{ r.label }}</span><span style="display:block; font-size:11px; color:var(--text-3);">{{ r.name }}</span></span>
+                <sc-if value="{{ r.active }}"><span style="color:var(--green); display:flex;">{{ iconCheck }}</span></sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <button onclick="{{ toggleProfile }}" style="display:flex; align-items:center; gap:10px; flex:1; min-width:0; background:transparent; border:none; cursor:pointer; padding:0;">
+            <span style="width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,#0E8A4F,#E2A000); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:13px; flex-shrink:0;">{{ userInit }}</span>
+            <span style="flex:1; min-width:0; text-align:left;"><span style="display:block; font-size:13px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ userName }}</span><span style="display:block; font-size:11px; color:var(--sidebar-muted);">{{ userRole }}</span></span>
+          </button>
+          <button onclick="{{ doLogout }}" title="Déconnexion" style="background:transparent; border:none; color:var(--sidebar-muted); cursor:pointer; display:flex; padding:6px; border-radius:7px;" style-hover="color:#fff; background:rgba(255,255,255,0.06);">{{ iconLogout }}</button>
+        </div>
+      </div>
+    </aside>
+
+    <div style="flex:1; display:flex; flex-direction:column; min-width:0; height:100vh;">
+      <header style="height:64px; flex-shrink:0; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 24px; gap:18px;">
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:11.5px; color:var(--text-3); font-weight:600; margin-bottom:1px;">{{ breadcrumb }}</div>
+          <div style="font-size:18px; font-weight:800; color:var(--text); letter-spacing:-0.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ pageTitle }}</div>
+        </div>
+        <div style="position:relative; max-width:320px; flex:1;">
+          <div style="display:flex; align-items:center; gap:9px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:9px 13px;">
+            <span style="color:var(--text-3); display:flex;">{{ iconSearch }}</span>
+            <input value="{{ searchVal }}" oninput="{{ setSearch }}" placeholder="Rechercher un abonné, décodeur, PDV…" style="border:none; background:transparent; outline:none; font-size:13.5px; color:var(--text); width:100%;">
+          </div>
+          <sc-if value="{{ searchOpen }}">
+            <div style="position:absolute; top:48px; left:0; right:0; background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow-lg); padding:6px; z-index:60; max-height:360px; overflow-y:auto;">
+              <sc-for list="{{ searchResults }}" as="r" hint-placeholder-count="4">
+                <button onclick="{{ r.go }}" style="display:flex; align-items:center; gap:11px; width:100%; text-align:left; background:transparent; border:none; border-radius:9px; padding:9px 10px; cursor:pointer;" style-hover="background:var(--surface-2);">
+                  <span style="width:30px; height:30px; border-radius:8px; background:var(--green-l); color:var(--green-d); display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ r.icon }}</span>
+                  <span style="flex:1; min-width:0;"><span style="display:block; font-size:13px; font-weight:600; color:var(--text);">{{ r.title }}</span><span style="display:block; font-size:11.5px; color:var(--text-3);">{{ r.sub }}</span></span>
+                  <span style="font-size:10.5px; font-weight:700; color:var(--text-3); background:var(--surface-2); padding:3px 8px; border-radius:7px; flex-shrink:0;">{{ r.type }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <div style="display:flex; align-items:center; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:3px;">
+          <button onclick="{{ setDesktop }}" style="{{ deviceDesktopStyle }}" title="Vue bureau">{{ iconMonitor }}</button>
+          <button onclick="{{ setMobile }}" style="{{ deviceMobileStyle }}" title="Vue terrain (mobile)">{{ iconPhone }}</button>
+        </div>
+        <button onclick="{{ toggleTheme }}" style="width:40px; height:40px; border-radius:10px; border:1px solid var(--border); background:var(--surface-2); color:var(--text-2); cursor:pointer; display:flex; align-items:center; justify-content:center;" style-hover="color:var(--text); border-color:var(--border-strong);">{{ themeIcon }}</button>
+        <button onclick="{{ openAlerts }}" style="position:relative; width:40px; height:40px; border-radius:10px; border:1px solid var(--border); background:var(--surface-2); color:var(--text-2); cursor:pointer; display:flex; align-items:center; justify-content:center;" style-hover="color:var(--text);">
+          {{ iconBell }}
+          <span style="position:absolute; top:-5px; right:-5px; background:var(--red); color:#fff; font-size:10px; font-weight:700; min-width:18px; height:18px; padding:0 4px; border-radius:9px; display:flex; align-items:center; justify-content:center; border:2px solid var(--surface);">{{ alertCount }}</span>
+        </button>
+      </header>
+
+      <main style="flex:1; overflow-y:auto; padding:24px 28px 40px;">
+
+        <sc-if value="{{ hasBanners }}">
+          <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:18px;">
+            <sc-for list="{{ banners }}" as="b" hint-placeholder-count="2">
+              <div style="{{ b.style }}">
+                <span style="display:flex; flex-shrink:0;">{{ b.icon }}</span>
+                <span style="flex:1; font-size:13px; font-weight:600;">{{ b.text }}</span>
+                <button onclick="{{ b.go }}" style="background:none; border:none; color:inherit; font-weight:800; text-decoration:underline; cursor:pointer; font-size:13px; padding:0; flex-shrink:0;">consulter</button>
+                <button onclick="{{ b.dismiss }}" style="background:none; border:none; color:inherit; cursor:pointer; display:flex; opacity:.6; flex-shrink:0;">{{ iconX }}</button>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showMobile }}">
+          <div style="display:flex; gap:40px; align-items:flex-start; justify-content:center; padding-top:8px;">
+            <div style="max-width:300px; padding-top:30px;">
+              <div style="display:inline-flex; align-items:center; gap:8px; padding:5px 11px; border-radius:999px; background:var(--green-l); color:var(--green-d); font-size:12px; font-weight:700; margin-bottom:16px;">{{ iconPhone }} Vue Terrain</div>
+              <h3 style="font-size:21px; font-weight:800; margin:0 0 12px; letter-spacing:-0.01em;">Encaissement mobile</h3>
+              <p style="font-size:14.5px; line-height:1.6; color:var(--text-2); margin:0 0 18px;">L'interface optimisée pour les agents VAD et opérateurs PDV sur le terrain : recherche abonné, encaissement et reçu en quelques tapes.</p>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; gap:10px; align-items:flex-start;"><div style="width:24px; height:24px; border-radius:7px; background:var(--green-l); color:var(--green-d); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">1</div><span style="font-size:13.5px; color:var(--text-2); line-height:1.5;">Rechercher le client par N° abonné, décodeur ou téléphone.</span></div>
+                <div style="display:flex; gap:10px; align-items:flex-start;"><div style="width:24px; height:24px; border-radius:7px; background:var(--green-l); color:var(--green-d); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">2</div><span style="font-size:13.5px; color:var(--text-2); line-height:1.5;">Choisir la formule et le mode de paiement (Wave, OM, espèce…).</span></div>
+                <div style="display:flex; gap:10px; align-items:flex-start;"><div style="width:24px; height:24px; border-radius:7px; background:var(--green-l); color:var(--green-d); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">3</div><span style="font-size:13.5px; color:var(--text-2); line-height:1.5;">Encaisser, la monnaie est calculée, le reçu est généré.</span></div>
+              </div>
+            </div>
+            <div style="width:340px; height:710px; background:#0a0a0a; border-radius:46px; padding:11px; box-shadow:var(--shadow-lg); flex-shrink:0;">
+              <div style="width:100%; height:100%; background:var(--bg); border-radius:36px; overflow:hidden; position:relative; display:flex; flex-direction:column;">
+                <div style="height:30px; background:var(--green); display:flex; align-items:center; justify-content:space-between; padding:0 20px; color:#fff; font-size:12px; font-weight:600; flex-shrink:0;"><span>9:41</span><span style="display:flex; gap:5px; align-items:center;">{{ iconPhone }} Wave · OM</span></div>
+                <div style="background:var(--green); padding:6px 18px 16px; color:#fff; flex-shrink:0;">
+                  <div style="display:flex; align-items:center; gap:9px; margin-bottom:14px;">{{ brandStarMini }}<span style="font-weight:800; font-size:15px; letter-spacing:.03em;">SENDISTRI</span><span style="margin-left:auto; font-size:11px; background:rgba(255,255,255,0.18); padding:3px 9px; border-radius:8px; font-weight:600;">PDV Liberté 6</span></div>
+                  <div style="font-size:13px; opacity:.85; font-weight:600;">Nouvel encaissement</div>
+                </div>
+                <div style="flex:1; overflow-y:auto; padding:16px;">
+                  <div style="background:var(--surface); border:1px solid var(--border); border-radius:13px; padding:13px; margin-bottom:13px;">
+                    <div style="font-size:11px; color:var(--text-3); font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:9px;">Client</div>
+                    <div style="display:flex; align-items:center; gap:9px; border:1px solid var(--border-strong); border-radius:9px; padding:9px 11px; color:var(--text-3);">{{ iconSearch }}<input value="AB-77204 · F. Ndiaye" readonly="" style="border:none; background:transparent; outline:none; font-size:13px; color:var(--text); width:100%;"></div>
+                  </div>
+                  <div style="background:var(--surface); border:1px solid var(--border); border-radius:13px; padding:13px; margin-bottom:13px; display:flex; flex-direction:column; gap:11px;">
+                    <div><div style="font-size:11px; color:var(--text-3); font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">Formule</div><div style="display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border-strong); border-radius:9px; padding:10px 12px;"><span style="font-size:14px; font-weight:600;">ÉVASION+</span><span style="font-family:var(--mono); font-size:13px; color:var(--text-2);">15 000</span></div></div>
+                    <div><div style="font-size:11px; color:var(--text-3); font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">Mode de paiement</div>
+                      <div style="display:flex; gap:7px;"><span style="flex:1; text-align:center; padding:9px; border-radius:9px; background:var(--green-l); color:var(--green-d); font-size:12.5px; font-weight:700; border:1.5px solid var(--green);">Wave</span><span style="flex:1; text-align:center; padding:9px; border-radius:9px; background:var(--surface-2); color:var(--text-2); font-size:12.5px; font-weight:600; border:1px solid var(--border);">Espèce</span><span style="flex:1; text-align:center; padding:9px; border-radius:9px; background:var(--surface-2); color:var(--text-2); font-size:12.5px; font-weight:600; border:1px solid var(--border);">OM</span></div></div>
+                  </div>
+                  <div style="background:var(--green-ll); border:1px solid var(--green-l); border-radius:13px; padding:14px; margin-bottom:14px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:7px;"><span style="font-size:13px; color:var(--text-2);">Montant total</span><span style="font-family:var(--mono); font-size:15px; font-weight:600; color:var(--text);">15 000 F</span></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:7px;"><span style="font-size:13px; color:var(--text-2);">Reçu (Wave)</span><span style="font-family:var(--mono); font-size:15px; font-weight:600; color:var(--text);">15 000 F</span></div>
+                    <div style="height:1px; background:var(--green-l); margin:7px 0;"></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="font-size:13px; font-weight:700; color:var(--green-d);">Monnaie à rendre</span><span style="font-family:var(--mono); font-size:16px; font-weight:700; color:var(--green-d);">0 F</span></div>
+                  </div>
+                </div>
+                <div style="padding:14px 16px 20px; flex-shrink:0; border-top:1px solid var(--border); background:var(--surface);">
+                  <button onclick="{{ mobileEncaisser }}" style="width:100%; padding:14px; border:none; border-radius:12px; background:var(--green); color:#fff; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 6px 16px rgba(14,138,79,0.3);" style-hover="background:var(--green-d);">Encaisser 15 000 FCFA</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showDashboard }}">
+          <div style="">
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:18px;">
+              <sc-for list="{{ kpiCards }}" as="k" hint-placeholder-count="4">
+                <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 18px 16px; box-shadow:var(--shadow); position:relative; overflow:hidden;">
+                  <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:11px; min-height:38px;">
+                    <div style="font-size:12px; color:var(--text-2); font-weight:700; text-transform:uppercase; letter-spacing:.03em; line-height:1.3;">{{ k.label }}</div>
+                    <div style="width:36px; height:36px; border-radius:10px; background:{{ k.iconBg }}; color:{{ k.iconColor }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ k.icon }}</div>
+                  </div>
+                  <div style="font-family:var(--mono); font-size:25px; font-weight:600; color:var(--text); letter-spacing:-0.01em; margin-bottom:3px;">{{ k.value }}</div>
+                  <div style="display:flex; align-items:center; gap:7px; margin-top:8px;">
+                    <span style="display:inline-flex; align-items:center; gap:3px; font-size:12px; font-weight:700; color:{{ k.trendColor }}; background:{{ k.trendBg }}; padding:2px 7px; border-radius:7px;">{{ k.trend }}</span>
+                    <span style="font-size:12px; color:var(--text-3);">{{ k.sub }}</span>
+                  </div>
+                  <div style="position:absolute; left:0; bottom:0; height:3px; width:100%; background:{{ k.bar }};"></div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 320px; gap:16px; margin-bottom:18px;">
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; box-shadow:var(--shadow);">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                  <div><div style="font-size:15px; font-weight:800; color:var(--text);">Activité du réseau</div><div style="font-size:12.5px; color:var(--text-3);">Recrutements et réabonnements · 30 derniers jours</div></div>
+                  <div style="display:flex; gap:4px; background:var(--surface-2); border:1px solid var(--border); border-radius:9px; padding:3px;">
+                    <sc-for list="{{ chartRanges }}" as="r" hint-placeholder-count="4"><button onclick="{{ r.go }}" style="{{ r.style }}">{{ r.label }}</button></sc-for>
+                  </div>
+                </div>
+                <div style="display:flex; gap:20px; margin:10px 0 6px;">
+                  <span style="display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--text-2); font-weight:600;"><span style="width:11px; height:11px; border-radius:3px; background:var(--green);"></span>Recrutements</span>
+                  <span style="display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--text-2); font-weight:600;"><span style="width:11px; height:11px; border-radius:3px; background:var(--yellow);"></span>Réabonnements</span>
+                </div>
+                <div style="height:230px; width:100%;">{{ activityChart }}</div>
+              </div>
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px; box-shadow:var(--shadow); display:flex; flex-direction:column;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;"><div style="font-size:15px; font-weight:800;">Alertes</div><span style="font-size:11.5px; font-weight:700; color:var(--red); background:var(--red-l); padding:3px 9px; border-radius:8px;">{{ alertCount }} non lues</span></div>
+                <div style="display:flex; flex-direction:column; gap:4px; overflow-y:auto;">
+                  <sc-for list="{{ alertItems }}" as="a" hint-placeholder-count="5">
+                    <button onclick="{{ a.go }}" style="display:flex; gap:11px; align-items:flex-start; text-align:left; background:transparent; border:none; border-radius:10px; padding:10px; cursor:pointer; width:100%;" style-hover="background:var(--surface-2);">
+                      <span style="width:32px; height:32px; border-radius:9px; background:{{ a.bg }}; color:{{ a.color }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ a.icon }}</span>
+                      <span style="flex:1; min-width:0;"><span style="display:block; font-size:13px; font-weight:600; color:var(--text); line-height:1.35;">{{ a.title }}</span><span style="display:block; font-size:11.5px; color:var(--text-3); margin-top:2px;">{{ a.time }}</span></span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; box-shadow:var(--shadow);">
+                <div style="font-size:15px; font-weight:800; margin-bottom:3px;">Commissions du mois</div>
+                <div style="font-size:12.5px; color:var(--text-3); margin-bottom:14px;">Estimation · Juin 2026</div>
+                <div style="display:flex; flex-direction:column; gap:1px;">
+                  <sc-for list="{{ commissionRows }}" as="c" hint-placeholder-count="5">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);"><span style="font-size:13.5px; color:var(--text-2);">{{ c.label }}</span><span style="font-family:var(--mono); font-size:13.5px; font-weight:600; color:var(--text);">{{ c.value }}</span></div>
+                  </sc-for>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding:13px 15px; background:var(--green-ll); border:1px solid var(--green-l); border-radius:11px;"><span style="font-size:14px; font-weight:800; color:var(--green-d);">Commission nette</span><span style="font-family:var(--mono); font-size:18px; font-weight:700; color:var(--green-d);">{{ commissionNet }}</span></div>
+              </div>
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; box-shadow:var(--shadow); overflow:hidden;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;"><div><div style="font-size:15px; font-weight:800;">Suivi par secteur</div><div style="font-size:12.5px; color:var(--text-3);">Taux de réalisation des objectifs</div></div></div>
+                <div style="overflow-x:auto;">
+                  <sc-for list="{{ sectorRows }}" as="s" hint-placeholder-count="6">
+                        </sc-for><table style="width:100%; border-collapse:collapse; font-size:13px;">
+                    <thead><tr style="text-align:left; color:var(--text-3);"><th style="padding:7px 8px; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.04em;">Secteur</th><th style="padding:7px 8px; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.04em; text-align:right;">Ventes</th><th style="padding:7px 8px; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.04em;">R/O</th></tr></thead>
+                    <tbody>
+                      <tr style="border-top:1px solid var(--border);"><td style="padding:9px 8px; font-weight:600; color:var(--text);">{{ s.name }}</td><td style="padding:9px 8px; text-align:right; font-family:var(--mono); color:var(--text-2);">{{ s.ventes }}</td><td style="padding:9px 8px;"><div style="display:flex; align-items:center; gap:8px;"><div style="flex:1; height:7px; border-radius:4px; background:var(--surface-2); overflow:hidden; min-width:50px;"><div style="height:100%; width:{{ s.pct }}; background:{{ s.color }}; border-radius:4px;"></div></div><span style="font-size:12px; font-weight:700; color:{{ s.color }}; width:38px;">{{ s.ro }}</span></div></td></tr>
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showTable }}">
+          <div style="">
+            <sc-if value="{{ tbl.hasKpis }}">
+              <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:18px;">
+                <sc-for list="{{ tbl.kpis }}" as="k" hint-placeholder-count="4">
+                  <div style="background:var(--surface); border:1px solid var(--border); border-radius:13px; padding:15px 16px; box-shadow:var(--shadow);">
+                    <div style="font-size:11.5px; color:var(--text-2); font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px;">{{ k.label }}</div>
+                    <div style="font-family:var(--mono); font-size:21px; font-weight:600; color:{{ k.color }};">{{ k.value }}</div>
+                    <div style="font-size:12px; color:var(--text-3); margin-top:3px;">{{ k.sub }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ tbl.hasSubnav }}">
+              <div style="display:flex; gap:2px; margin-bottom:16px; border-bottom:1px solid var(--border);">
+                <sc-for list="{{ tbl.subnav }}" as="s" hint-placeholder-count="3"><button onclick="{{ s.go }}" style="{{ s.style }}">{{ s.label }}</button></sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ tbl.hasPeriod }}">
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); padding:16px 18px; margin-bottom:16px;">
+                <div style="font-size:13px; color:var(--text-2); margin-bottom:12px;">Renseigner la période (date début et date fin), puis cliquer sur <b style="color:var(--text);">Afficher</b> pour voir les enregistrements effectués.</div>
+                <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+                  <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">Date début</label><input type="date" value="2026-06-01" style="padding:9px 12px; border:1px solid var(--border-strong); border-radius:9px; background:var(--surface); color:var(--text); font-size:13.5px; outline:none;"></div>
+                  <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">Date fin</label><input type="date" value="2026-06-14" style="padding:9px 12px; border:1px solid var(--border-strong); border-radius:9px; background:var(--surface); color:var(--text); font-size:13.5px; outline:none;"></div>
+                  <button onclick="{{ exportToast }}" style="padding:10px 22px; border-radius:9px; border:none; background:var(--green); color:#fff; font-size:13.5px; font-weight:700; cursor:pointer;">Afficher</button>
+                </div>
+              </div>
+            </sc-if>
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); overflow:hidden;">
+              <div style="display:flex; align-items:center; gap:12px; padding:14px 18px; border-bottom:1px solid var(--border); flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--text-2); font-weight:600;">Afficher <select value="{{ tbl.rowsVal }}" onchange="{{ tbl.setRows }}" style="padding:6px 8px; border:1px solid var(--border-strong); border-radius:8px; background:var(--surface); color:var(--text); font-size:12.5px; cursor:pointer; outline:none;"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> lignes</div>
+                <sc-if value="{{ tbl.hasSel }}"><span style="font-size:12.5px; font-weight:700; color:var(--green-d); background:var(--green-l); padding:6px 11px; border-radius:8px;">{{ tbl.selCount }} sélectionné(s)</span></sc-if>
+                <div style="flex:1;"></div>
+                <div style="display:flex; align-items:center; gap:9px; min-width:170px; max-width:280px; background:var(--surface-2); border:1px solid var(--border); border-radius:9px; padding:8px 12px;">
+                  <span style="color:var(--text-3); display:flex;">{{ iconSearch }}</span>
+                  <input value="{{ tbl.q }}" oninput="{{ tbl.setQ }}" placeholder="Rechercher…" style="border:none; background:transparent; outline:none; font-size:13.5px; color:var(--text); width:100%;">
+                </div>
+                <sc-for list="{{ tbl.filters }}" as="f" hint-placeholder-count="2"><button onclick="{{ f.go }}" style="{{ f.style }}">{{ f.label }}</button></sc-for>
+                <button onclick="{{ exportToast }}" style="display:flex; align-items:center; gap:7px; padding:8px 13px; border-radius:9px; border:1px solid var(--border-strong); background:var(--surface); color:var(--text-2); font-size:13px; font-weight:600; cursor:pointer;" style-hover="border-color:var(--green); color:var(--green);">{{ iconDownload }} Excel</button>
+                <sc-if value="{{ tbl.hasPrimary }}"><button onclick="{{ tbl.primaryAction }}" style="display:flex; align-items:center; gap:7px; padding:8px 14px; border-radius:9px; border:none; background:var(--green); color:#fff; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; box-shadow:0 3px 10px rgba(14,138,79,0.25);" style-hover="background:var(--green-d);">{{ iconPlus }} {{ tbl.primaryLabel }}</button></sc-if>
+              </div>
+              <div style="overflow:auto; max-height:62vh;">
+                <sc-for list="{{ tbl.columns }}" as="c" hint-placeholder-count="6"></sc-for><sc-for list="{{ tbl.rows }}" as="r" hint-placeholder-count="8">
+                      </sc-for><sc-for list="{{ r.cells }}" as="cell" hint-placeholder-count="6"></sc-for><sc-if value="{{ tbl.hasTotals }}"></sc-if><sc-for list="{{ tbl.totals }}" as="cell" hint-placeholder-count="6"></sc-for><table style="width:100%; border-collapse:collapse; font-size:13.5px; min-width:{{ tbl.minw }};">
+                  <thead><tr><th style="{{ c.style }}">{{ c.label }}</th></tr></thead>
+                  <tbody>
+                    <tr onclick="{{ r.onClick }}" style="{{ r.style }}" style-hover="background:var(--surface-2);">
+                        <td style="{{ cell.style }}">{{ cell.node }}</td>
+                      </tr>
+                    
+                    <tr style="background:var(--blue-l);"><td style="{{ cell.style }}">{{ cell.node }}</td></tr>
+                  </tbody>
+                </table>
+                <sc-if value="{{ tbl.empty }}"><div style="padding:60px 20px; text-align:center;"><div style="color:var(--text-3); margin-bottom:10px; display:flex; justify-content:center;">{{ iconSearch }}</div><div style="font-size:14px; font-weight:600; color:var(--text-2);">Aucun résultat</div><div style="font-size:12.5px; color:var(--text-3); margin-top:3px;">Essayez de modifier votre recherche.</div></div></sc-if>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:13px 18px; border-top:1px solid var(--border); font-size:12.5px; color:var(--text-3); flex-wrap:wrap; gap:10px;">
+                <span>{{ tbl.pageInfo }}</span>
+                <div style="display:flex; gap:6px; align-items:center;">
+                  <button onclick="{{ tbl.prev }}" style="height:30px; padding:0 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text-2); cursor:pointer; font-size:12.5px; font-weight:600;">Précédent</button>
+                  <sc-for list="{{ tbl.pageBtns }}" as="p" hint-placeholder-count="3"><button onclick="{{ p.go }}" style="{{ p.style }}">{{ p.n }}</button></sc-for>
+                  <button onclick="{{ tbl.next }}" style="height:30px; padding:0 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text-2); cursor:pointer; font-size:12.5px; font-weight:600;">Suivant</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showEncaissement }}">
+          <div style=" display:grid; grid-template-columns:1fr 360px; gap:18px; align-items:start;">
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); padding:18px 20px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;"><div style="font-size:15px; font-weight:800;">Recherche abonné</div><button onclick="{{ encNouveau }}" style="display:flex; align-items:center; gap:6px; padding:7px 12px; border-radius:9px; border:1px solid var(--green); background:var(--green-l); color:var(--green-d); font-size:12.5px; font-weight:700; cursor:pointer;">{{ iconPlus }} Nouvel abonné</button></div>
+                <div style="display:flex; gap:10px;">
+                  <div style="display:flex; align-items:center; gap:9px; flex:1; background:var(--surface-2); border:1px solid var(--border-strong); border-radius:10px; padding:11px 14px;">{{ iconSearch }}<input value="77204" readonly="" style="border:none; background:transparent; outline:none; font-size:14px; color:var(--text); width:100%;" placeholder="N° abonné, décodeur ou téléphone"></div>
+                  <button style="padding:11px 18px; border-radius:10px; border:none; background:var(--text); color:var(--bg); font-size:13.5px; font-weight:700; cursor:pointer;">Rechercher</button>
+                </div>
+                <div style="margin-top:12px; border:1px solid var(--green); background:var(--green-ll); border-radius:11px; padding:12px 14px; display:flex; align-items:center; gap:13px;">
+                  <div style="width:40px; height:40px; border-radius:10px; background:var(--green); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700;">FN</div>
+                  <div style="flex:1;"><div style="font-size:14px; font-weight:700;">Fatou Ndiaye <span style="font-family:var(--mono); font-size:12px; color:var(--text-2); font-weight:500;">· AB-77204</span></div><div style="font-size:12.5px; color:var(--text-2);">Décodeur Z4 · 77 204 11 88 · Formule ÉVASION+ · Échéance 18/06/2026</div></div>
+                  <span style="font-size:11.5px; font-weight:700; color:var(--green-d); background:var(--green-l); padding:4px 10px; border-radius:8px;">Sélectionné</span>
+                </div>
+              </div>
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); padding:20px;">
+                <div style="font-size:15px; font-weight:800; margin-bottom:16px;">Formulaire d'encaissement</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px 16px;">
+                  <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">PDV / Agence</label><div style="padding:10px 12px; border:1px solid var(--border-strong); border-radius:9px; font-size:13.5px; background:var(--surface-2);">Boutique Liberté 6</div></div>
+                  <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">Type d'opération</label>
+                    <div style="display:flex; gap:6px;"><sc-for list="{{ encTypes }}" as="t" hint-placeholder-count="3"><button onclick="{{ t.go }}" style="{{ t.style }}">{{ t.label }}</button></sc-for></div>
+                  </div>
+                  <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">Formule</label>
+                    <select onchange="{{ encSetFormule }}" style="width:100%; padding:10px 12px; border:1px solid var(--border-strong); border-radius:9px; font-size:13.5px; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
+                      <sc-for list="{{ encFormules }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}" selected="{{ o.selected }}">{{ o.label }}</option></sc-for>
+                    </select></div>
+                  <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">Nombre de mois</label>
+                    <select onchange="{{ encSetMois }}" style="width:100%; padding:10px 12px; border:1px solid var(--border-strong); border-radius:9px; font-size:13.5px; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
+                      <sc-for list="{{ encMoisOpts }}" as="o" hint-placeholder-count="6"><option value="{{ o.value }}" selected="{{ o.selected }}">{{ o.label }}</option></sc-for>
+                    </select></div>
+                  <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">N° décodeur</label><div style="padding:10px 12px; border:1px solid var(--border-strong); border-radius:9px; font-size:13.5px; background:var(--surface-2); font-family:var(--mono);">Z4-008842199</div></div>
+                  <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">Mode de paiement</label>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;"><sc-for list="{{ encModes }}" as="m" hint-placeholder-count="5"><button onclick="{{ m.go }}" style="{{ m.style }}">{{ m.label }}</button></sc-for></div>
+                  </div>
+                </div>
+                <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border);">
+                  <div style="font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:10px;">Options supplémentaires</div>
+                  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <sc-for list="{{ encOptions }}" as="op" hint-placeholder-count="3"><button onclick="{{ op.go }}" style="{{ op.style }}"><span style="display:flex;">{{ op.check }}</span>{{ op.label }} <span style="opacity:.7; font-family:var(--mono);">+{{ op.price }}</span></button></sc-for>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); padding:20px; position:sticky; top:0;">
+              <div style="font-size:15px; font-weight:800; margin-bottom:16px;">Récapitulatif</div>
+              <div style="display:flex; flex-direction:column; gap:11px;">
+                <div style="display:flex; justify-content:space-between;"><span style="font-size:13.5px; color:var(--text-2);">{{ encFormuleLabel }} × {{ encMois }} mois</span><span style="font-family:var(--mono); font-size:13.5px; font-weight:600;">{{ encBase }}</span></div>
+                <sc-for list="{{ encActiveOptions }}" as="o" hint-placeholder-count="0"><div style="display:flex; justify-content:space-between;"><span style="font-size:13.5px; color:var(--text-2);">{{ o.label }}</span><span style="font-family:var(--mono); font-size:13.5px; font-weight:600;">+{{ o.price }}</span></div></sc-for>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding:14px 16px; background:var(--green-ll); border:1px solid var(--green-l); border-radius:11px;"><span style="font-size:13.5px; font-weight:700; color:var(--green-d);">Montant total</span><span style="font-family:var(--mono); font-size:20px; font-weight:700; color:var(--green-d);">{{ encTotal }}</span></div>
+              <div style="margin-top:16px;"><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">Montant reçu</label><input value="{{ encRecu }}" oninput="{{ encSetRecu }}" style="width:100%; padding:12px 14px; border:1px solid var(--border-strong); border-radius:10px; font-size:16px; font-family:var(--mono); font-weight:600; color:var(--text); background:var(--surface); outline:none;" style-focus="border-color:var(--green);"></div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding:11px 14px; border-radius:10px; background:{{ encMonnaieBg }};"><span style="font-size:13px; font-weight:600; color:{{ encMonnaieColor }};">Monnaie rendue</span><span style="font-family:var(--mono); font-size:17px; font-weight:700; color:{{ encMonnaieColor }};">{{ encMonnaie }}</span></div>
+              <button onclick="{{ encValider }}" style="width:100%; margin-top:18px; padding:14px; border:none; border-radius:11px; background:var(--green); color:#fff; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 6px 16px rgba(14,138,79,0.3);" style-hover="background:var(--green-d);">Enregistrer l'encaissement</button>
+              <button style="width:100%; margin-top:9px; padding:11px; border:1px solid var(--border-strong); border-radius:11px; background:transparent; color:var(--text-2); font-size:13.5px; font-weight:600; cursor:pointer;">Annuler</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showMatching }}">
+          <div style="">
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); padding:16px 18px; margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+              <span style="font-size:13px; font-weight:700; color:var(--text-2);">Rapprochement :</span>
+              <div style="padding:8px 13px; border:1px solid var(--border-strong); border-radius:9px; font-size:13px; background:var(--surface-2); font-weight:600;">PDV Liberté 6</div>
+              <div style="padding:8px 13px; border:1px solid var(--border-strong); border-radius:9px; font-size:13px; background:var(--surface-2); font-weight:600;">Réabonnement</div>
+              <div style="padding:8px 13px; border:1px solid var(--border-strong); border-radius:9px; font-size:13px; background:var(--surface-2); font-weight:600;">Juin 2026</div>
+              <div style="flex:1;"></div>
+              <span style="font-size:12.5px; font-weight:700; color:var(--red); background:var(--red-l); padding:6px 11px; border-radius:8px;">{{ matchEcarts }} écart(s) détecté(s)</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); overflow:hidden;">
+                <div style="padding:13px 16px; background:var(--blue-l); border-bottom:1px solid var(--border); font-size:13.5px; font-weight:800; color:var(--blue);">Rapport d'activité (fournisseur)</div>
+                <sc-for list="{{ matchLeft }}" as="m" hint-placeholder-count="5"></sc-for><table style="width:100%; border-collapse:collapse; font-size:13px;"><thead><tr style="color:var(--text-3);"><th style="text-align:left; padding:9px 14px; font-size:11px; text-transform:uppercase; font-weight:700;">Formule</th><th style="text-align:right; padding:9px 14px; font-size:11px; text-transform:uppercase; font-weight:700;">Nb</th><th style="text-align:right; padding:9px 14px; font-size:11px; text-transform:uppercase; font-weight:700;">Montant</th></tr></thead><tbody>
+                  <tr style="{{ m.style }}"><td style="padding:10px 14px; font-weight:600;">{{ m.formule }}</td><td style="padding:10px 14px; text-align:right; font-family:var(--mono);">{{ m.nb }}</td><td style="padding:10px 14px; text-align:right; font-family:var(--mono); font-weight:600;">{{ m.montant }}</td></tr>
+                </tbody></table>
+              </div>
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); overflow:hidden;">
+                <div style="padding:13px 16px; background:var(--green-l); border-bottom:1px solid var(--border); font-size:13.5px; font-weight:800; color:var(--green-d);">Encaissements SENDISTRI</div>
+                <sc-for list="{{ matchRight }}" as="m" hint-placeholder-count="5"></sc-for><table style="width:100%; border-collapse:collapse; font-size:13px;"><thead><tr style="color:var(--text-3);"><th style="text-align:left; padding:9px 14px; font-size:11px; text-transform:uppercase; font-weight:700;">Formule</th><th style="text-align:right; padding:9px 14px; font-size:11px; text-transform:uppercase; font-weight:700;">Nb</th><th style="text-align:right; padding:9px 14px; font-size:11px; text-transform:uppercase; font-weight:700;">Montant</th></tr></thead><tbody>
+                  <tr style="{{ m.style }}"><td style="padding:10px 14px; font-weight:600;">{{ m.formule }}</td><td style="padding:10px 14px; text-align:right; font-family:var(--mono);">{{ m.nb }}</td><td style="padding:10px 14px; text-align:right; font-family:var(--mono); font-weight:600;">{{ m.montant }}</td></tr>
+                </tbody></table>
+              </div>
+            </div>
+            <div style="display:flex; gap:12px; margin-top:16px; justify-content:flex-end;">
+              <button onclick="{{ exportToast }}" style="display:flex; align-items:center; gap:7px; padding:11px 16px; border-radius:10px; border:1px solid var(--border-strong); background:var(--surface); color:var(--text-2); font-size:13.5px; font-weight:600; cursor:pointer;">{{ iconDownload }} Exporter les écarts</button>
+              <button onclick="{{ matchValider }}" style="display:flex; align-items:center; gap:7px; padding:11px 18px; border-radius:10px; border:none; background:var(--green); color:#fff; font-size:13.5px; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(14,138,79,0.25);">{{ iconCheck }} Marquer comme matché</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showStats }}">
+          <div style="">
+            <div style="display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap;">
+              <sc-for list="{{ statBases }}" as="b" hint-placeholder-count="4"><button onclick="{{ b.go }}" style="{{ b.style }}">{{ b.label }}</button></sc-for>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:18px; align-items:end;">
+              <sc-for list="{{ podium }}" as="p" hint-placeholder-count="3">
+                <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); padding:20px; text-align:center; position:relative; {{ p.lift }}">
+                  <div style="position:absolute; top:-15px; left:50%; transform:translateX(-50%); width:36px; height:36px; border-radius:50%; background:{{ p.medal }}; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:15px; box-shadow:var(--shadow);">{{ p.rank }}</div>
+                  <div style="width:54px; height:54px; border-radius:14px; margin:14px auto 12px; background:{{ p.avatarBg }}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px;">{{ p.initials }}</div>
+                  <div style="font-size:14.5px; font-weight:800;">{{ p.name }}</div>
+                  <div style="font-size:12px; color:var(--text-3); margin-bottom:10px;">{{ p.secteur }}</div>
+                  <div style="font-family:var(--mono); font-size:22px; font-weight:700; color:var(--green-d);">{{ p.score }}</div>
+                  <div style="font-size:12px; color:var(--text-3);">{{ p.metric }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); overflow:hidden;">
+              <div style="padding:14px 18px; border-bottom:1px solid var(--border); font-size:15px; font-weight:800;">Classement complet</div>
+              <sc-for list="{{ classement }}" as="c" hint-placeholder-count="8"></sc-for><table style="width:100%; border-collapse:collapse; font-size:13.5px;"><thead><tr style="background:var(--surface-2); color:var(--text-3);"><th style="text-align:left; padding:10px 18px; font-size:11px; text-transform:uppercase; font-weight:700;">Rang</th><th style="text-align:left; padding:10px 14px; font-size:11px; text-transform:uppercase; font-weight:700;">Point de vente</th><th style="text-align:left; padding:10px 14px; font-size:11px; text-transform:uppercase; font-weight:700;">Performance</th><th style="text-align:right; padding:10px 18px; font-size:11px; text-transform:uppercase; font-weight:700;">vs M-1</th></tr></thead><tbody>
+                <tr style="border-top:1px solid var(--border);"><td style="padding:11px 18px; font-family:var(--mono); font-weight:700; color:var(--text-2);">{{ c.rank }}</td><td style="padding:11px 14px; font-weight:600;">{{ c.name }}</td><td style="padding:11px 14px;"><div style="display:flex; align-items:center; gap:10px;"><div style="flex:1; max-width:220px; height:8px; border-radius:5px; background:var(--surface-2); overflow:hidden;"><div style="height:100%; width:{{ c.pct }}; background:linear-gradient(90deg,var(--green),var(--yellow)); border-radius:5px;"></div></div><span style="font-family:var(--mono); font-size:13px; font-weight:600;">{{ c.score }}</span></div></td><td style="padding:11px 18px; text-align:right;"><span style="font-size:12.5px; font-weight:700; color:{{ c.deltaColor }};">{{ c.delta }}</span></td></tr>
+              </tbody></table>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showAgents }}">
+          <div>
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:18px;">
+              <sc-for list="{{ agentKpis }}" as="k" hint-placeholder-count="4">
+                <div style="background:var(--surface); border:1px solid var(--border); border-radius:13px; padding:15px 16px; box-shadow:var(--shadow);">
+                  <div style="font-size:11.5px; color:var(--text-2); font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px;">{{ k.label }}</div>
+                  <div style="font-family:var(--mono); font-size:21px; font-weight:600; color:{{ k.color }};">{{ k.value }}</div>
+                  <div style="font-size:12px; color:var(--text-3); margin-top:3px;">{{ k.sub }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+              <sc-for list="{{ agents }}" as="a" hint-placeholder-count="6">
+                <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); padding:18px;">
+                  <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+                    <div style="width:46px; height:46px; border-radius:12px; background:{{ a.avatarBg }}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; flex-shrink:0;">{{ a.initials }}</div>
+                    <div style="flex:1; min-width:0;"><div style="font-size:14.5px; font-weight:800;">{{ a.name }}</div><div style="font-size:12px; color:var(--text-3);">Zone {{ a.zone }}</div></div>
+                  </div>
+                  <div style="display:flex; gap:8px; margin-bottom:14px;">
+                    <div style="flex:1; text-align:center; padding:10px 6px; border-radius:10px; background:var(--surface-2);"><div style="font-family:var(--mono); font-size:17px; font-weight:700;">{{ a.attrib }}</div><div style="font-size:10.5px; color:var(--text-3); font-weight:600; text-transform:uppercase; letter-spacing:.03em; margin-top:2px;">Attribués</div></div>
+                    <div style="flex:1; text-align:center; padding:10px 6px; border-radius:10px; background:var(--green-l);"><div style="font-family:var(--mono); font-size:17px; font-weight:700; color:var(--green-d);">{{ a.vendus }}</div><div style="font-size:10.5px; color:var(--green-d); font-weight:600; text-transform:uppercase; letter-spacing:.03em; margin-top:2px;">Vendus</div></div>
+                    <div style="flex:1; text-align:center; padding:10px 6px; border-radius:10px; background:var(--yellow-l);"><div style="font-family:var(--mono); font-size:17px; font-weight:700; color:var(--yellow-d);">{{ a.dispo }}</div><div style="font-size:10.5px; color:var(--yellow-d); font-weight:600; text-transform:uppercase; letter-spacing:.03em; margin-top:2px;">En stock</div></div>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:9px; margin-bottom:14px;">
+                    <div style="flex:1; height:8px; border-radius:5px; background:var(--surface-2); overflow:hidden;"><div style="height:100%; width:{{ a.pct }}; background:{{ a.pctColor }}; border-radius:5px;"></div></div>
+                    <span style="font-size:12px; font-weight:700; color:{{ a.pctColor }};">{{ a.pct }}</span>
+                  </div>
+                  <div style="display:flex; align-items:center; justify-content:space-between; padding-top:12px; border-top:1px solid var(--border);">
+                    <span style="font-size:11.5px; color:var(--text-3);">{{ a.last }}</span>
+                    <button onclick="{{ a.reappro }}" style="display:flex; align-items:center; gap:5px; padding:6px 12px; border-radius:8px; border:1px solid var(--green); background:var(--green-l); color:var(--green-d); font-size:12px; font-weight:700; cursor:pointer;">Réapprovisionner</button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showBankForm }}">
+          <div style="display:grid; grid-template-columns:370px 1fr; gap:18px; align-items:start;">
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); padding:20px;">
+              <div style="font-size:15px; font-weight:800; margin-bottom:16px;">{{ bf.formTitle }}</div>
+              <div style="display:flex; flex-direction:column; gap:12px;">
+                <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">Banque</label><select style="width:100%; padding:10px 12px; border:1px solid var(--border-strong); border-radius:9px; font-size:13.5px; background:var(--surface); color:var(--text); cursor:pointer; outline:none;"><sc-for list="{{ bf.banks }}" as="b" hint-placeholder-count="5"><option>{{ b }}</option></sc-for></select></div>
+                <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">N° bordereau</label><input placeholder="BD-2026-…" style="width:100%; padding:10px 12px; border:1px solid var(--border-strong); border-radius:9px; font-size:13.5px; background:var(--surface); color:var(--text); outline:none;"></div>
+                <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">Montant (FCFA)</label><input placeholder="0" style="width:100%; padding:10px 12px; border:1px solid var(--border-strong); border-radius:9px; font-size:13.5px; font-family:var(--mono); background:var(--surface); color:var(--text); outline:none;"></div>
+                <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">PDV concerné</label><select style="width:100%; padding:10px 12px; border:1px solid var(--border-strong); border-radius:9px; font-size:13.5px; background:var(--surface); color:var(--text); cursor:pointer; outline:none;"><sc-for list="{{ bf.pdvs }}" as="p" hint-placeholder-count="6"><option>{{ p }}</option></sc-for></select></div>
+                <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">Date</label><input type="date" value="2026-06-14" style="width:100%; padding:10px 12px; border:1px solid var(--border-strong); border-radius:9px; font-size:13.5px; background:var(--surface); color:var(--text); outline:none;"></div>
+                <div><label style="display:block; font-size:12px; font-weight:700; color:var(--text-2); margin-bottom:6px;">Libellé / Motif</label><input placeholder="Libellé du mouvement" style="width:100%; padding:10px 12px; border:1px solid var(--border-strong); border-radius:9px; font-size:13.5px; background:var(--surface); color:var(--text); outline:none;"></div>
+              </div>
+              <button onclick="{{ bf.submit }}" style="width:100%; margin-top:18px; padding:13px; border:none; border-radius:10px; background:var(--green); color:#fff; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(14,138,79,0.25);" style-hover="background:var(--green-d);">Enregistrer</button>
+              <button style="width:100%; margin-top:9px; padding:11px; border:1px solid var(--border-strong); border-radius:10px; background:transparent; color:var(--text-2); font-size:13.5px; font-weight:600; cursor:pointer;">Annuler</button>
+            </div>
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); overflow:hidden;">
+              <div style="padding:15px 18px; border-bottom:1px solid var(--border); font-size:14.5px; font-weight:800;">{{ bf.listTitle }}</div>
+              <div style="overflow-x:auto;">
+                <sc-for list="{{ bf.rows }}" as="r" hint-placeholder-count="6">
+                      </sc-for><table style="width:100%; border-collapse:collapse; font-size:13px;">
+                  <thead><tr style="background:var(--surface-2);"><th style="padding:10px 16px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--text-3);">Réf.</th><th style="padding:10px 16px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--text-3);">PDV</th><th style="padding:10px 16px; text-align:right; font-size:11px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--text-3);">Montant</th><th style="padding:10px 16px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--text-3);">Banque</th><th style="padding:10px 16px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--text-3);">Date</th><th style="padding:10px 16px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--text-3);">Statut</th></tr></thead>
+                  <tbody>
+                    <tr style="border-top:1px solid var(--border);">
+                        <td style="padding:11px 16px; font-family:var(--mono); color:var(--text-3);">{{ r.ref }}</td>
+                        <td style="padding:11px 16px; font-weight:700;">{{ r.pdv }}</td>
+                        <td style="padding:11px 16px; text-align:right; font-family:var(--mono); font-weight:600;">{{ r.montant }}</td>
+                        <td style="padding:11px 16px; color:var(--text-2);">{{ r.bank }}</td>
+                        <td style="padding:11px 16px; color:var(--text-3);">{{ r.date }}</td>
+                        <td style="padding:11px 16px;"><span style="background:{{ r.sBg }}; color:{{ r.sColor }}; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:8px;">{{ r.statut }}</span></td>
+                      </tr>
+                    
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+      </main>
+    </div>
+
+    <sc-if value="{{ modalOpen }}">
+      <div onclick="{{ closeModal }}" style="position:fixed; inset:0; background:rgba(10,20,14,0.55); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; z-index:90; padding:24px;">
+        <div onclick="{{ stop }}" style="{{ modalWidth }} background:var(--surface); border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-lg); max-height:88vh; overflow:hidden; display:flex; flex-direction:column;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--border);">
+            <div style="font-size:16px; font-weight:800;">{{ modalTitle }}</div>
+            <button onclick="{{ closeModal }}" style="width:32px; height:32px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2); color:var(--text-2); cursor:pointer; display:flex; align-items:center; justify-content:center;" style-hover="color:var(--text);">{{ iconX }}</button>
+          </div>
+          <div style="padding:22px; overflow-y:auto;">{{ modalBody }}</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ toastOpen }}">
+      <div style="position:fixed; bottom:26px; left:50%; transform:translateX(-50%); z-index:120; display:flex; align-items:center; gap:11px; padding:13px 18px; border-radius:12px; background:var(--text); color:var(--bg); font-size:14px; font-weight:600; box-shadow:var(--shadow-lg);">
+        <span style="display:flex; color:{{ toastIcon }};">{{ toastIconEl }}</span>{{ toastMsg }}
+      </div>
+    </sc-if>
+
+  </div>
+</sc-if>
+</x-dc>
+
+
+
