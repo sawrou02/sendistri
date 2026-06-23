@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F4F6F3;
+  --surface: #FFFFFF;
+  --surface-2: #FAFBF9;
+  --border: #E6EAE3;
+  --border-strong: #D6DCD2;
+  --text: #13201A;
+  --text-2: #566159;
+  --text-3: #8A938B;
+  --green: #0E8A4F;
+  --green-d: #0A6B3D;
+  --green-l: #E7F4EC;
+  --green-ll: #F1F9F4;
+  --yellow: #E2A000;
+  --yellow-d: #8A5E00;
+  --yellow-l: #FBF1D6;
+  --red: #D23A2C;
+  --red-d: #A82E22;
+  --red-l: #FAE9E6;
+  --blue: #2B6CB0;
+  --blue-l: #E7EFF8;
+  --sidebar-bg: #0B2A1B;
+  --sidebar-2: #0E331F;
+  --sidebar-text: #C2D9CB;
+  --sidebar-muted: #6E9079;
+  --sidebar-active: #FFFFFF;
+  --sidebar-active-bg: rgba(255, 255, 255, 0.09);
+  --shadow: 0 1px 2px rgba(16, 40, 28, 0.06), 0 4px 16px rgba(16, 40, 28, 0.05);
+  --shadow-lg: 0 12px 48px rgba(10, 30, 20, 0.22);
+  --font: 'Manrope', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+
+[data-theme='dark'] {
+  --bg: #0B120E;
+  --surface: #141D17;
+  --surface-2: #101813;
+  --border: #243029;
+  --border-strong: #2F3D34;
+  --text: #E8EFE9;
+  --text-2: #9DAEA3;
+  --text-3: #6B7A71;
+  --green: #27B669;
+  --green-d: #1F9D58;
+  --green-l: #13281C;
+  --green-ll: #0F1E15;
+  --yellow: #E9B23C;
+  --yellow-d: #E9B23C;
+  --yellow-l: #27220F;
+  --red: #E5604F;
+  --red-d: #E5604F;
+  --red-l: #291411;
+  --blue: #5E96D6;
+  --blue-l: #13202E;
+  --sidebar-bg: #07150D;
+  --sidebar-2: #0B2014;
+  --sidebar-text: #A7C2B1;
+  --sidebar-muted: #5E7D69;
+  --sidebar-active: #FFFFFF;
+  --sidebar-active-bg: rgba(255, 255, 255, 0.07);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 56px rgba(0, 0, 0, 0.6);
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-track { background: transparent; }
+
+@keyframes scFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scPop { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes scToast { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes scSlideL { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: none; } }
+
+.animate-pop { animation: scPop .22s ease both; }
+.animate-fade { animation: scFade .2s ease both; }
+.animate-slide-l { animation: scSlideL .22s ease both; }
+.font-mono-num { font-family: var(--mono); }
+
+input, select, button, textarea { font-family: inherit; }

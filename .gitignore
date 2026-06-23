@@ -1,0 +1,33 @@
+# Claude Code internal
+.claude/
+
+# Node
+node_modules/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Prisma
+prisma/migrations/dev.db
+prisma/*.db
+
+# Vite
+.vite/
+
+# Coverage
+coverage/
