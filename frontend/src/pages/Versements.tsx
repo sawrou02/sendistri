@@ -73,7 +73,7 @@ const statutBadge = (s: string) => {
   const map: Record<string, string> = {
     PENDING: 'bg-amber-100 text-amber-700',
     CONFIRMED: 'bg-emerald-100 text-emerald-700',
-    REJECTED: 'bg-red-100 text-sendistri-red',
+    REJECTED: 'bg-red-100 text-red',
   };
   return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${map[s] ?? ''}`}>{s}</span>;
 };
@@ -148,9 +148,9 @@ export default function Versements() {
         filters={
           <>
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Statut</label>
+              <label className="text-xs font-medium text-text-3">Statut</label>
               <select value={filterStatut} onChange={(e) => setFilterStatut(e.target.value)}
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none">
+                className="rounded-lg border border-border px-3 py-2 text-sm focus:border-green focus:outline-none">
                 <option value="">Tous</option>
                 <option value="PENDING">En attente</option>
                 <option value="CONFIRMED">Confirmé</option>
@@ -158,18 +158,18 @@ export default function Versements() {
               </select>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Du</label>
+              <label className="text-xs font-medium text-text-3">Du</label>
               <input type="date" value={filterFrom} onChange={(e) => setFilterFrom(e.target.value)}
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none" />
+                className="rounded-lg border border-border px-3 py-2 text-sm focus:border-green focus:outline-none" />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Au</label>
+              <label className="text-xs font-medium text-text-3">Au</label>
               <input type="date" value={filterTo} onChange={(e) => setFilterTo(e.target.value)}
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none" />
+                className="rounded-lg border border-border px-3 py-2 text-sm focus:border-green focus:outline-none" />
             </div>
             {(filterStatut || filterFrom || filterTo) && (
               <button onClick={() => { setFilterStatut(''); setFilterFrom(''); setFilterTo(''); }}
-                className="self-end rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-500 hover:bg-gray-50">
+                className="self-end rounded-lg border border-border px-3 py-2 text-sm text-text-3 hover:bg-surface-2">
                 Effacer
               </button>
             )}
@@ -180,7 +180,7 @@ export default function Versements() {
             {canConfirm && (
               <>
                 <button onClick={handleExportCsv}
-                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  className="rounded-lg border border-border-strong bg-surface px-4 py-2 text-sm font-medium text-text-2 hover:bg-surface-2">
                   ↓ CSV
                 </button>
                 <button onClick={handleExportPdf}
@@ -190,7 +190,7 @@ export default function Versements() {
               </>
             )}
             <button onClick={() => setOpen(true)}
-              className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+              className="rounded-lg bg-green px-4 py-2 text-sm font-medium text-white hover:bg-green-d">
               + Nouveau versement
             </button>
           </div>
@@ -205,19 +205,19 @@ export default function Versements() {
                       Confirmer
                     </button>
                     <button onClick={() => decisionMutation.mutate({ id: row.id, statut: 'REJECTED' })}
-                      className="rounded bg-red-100 px-2 py-1 text-xs font-medium text-sendistri-red hover:bg-red-200">
+                      className="rounded bg-red-100 px-2 py-1 text-xs font-medium text-red hover:bg-red-200">
                       Rejeter
                     </button>
                   </div>
                 ) : (
-                  <span className="text-xs text-gray-400">—</span>
+                  <span className="text-xs text-text-3">—</span>
                 )
             : undefined
         }
       />
 
       <Modal open={open} title="Nouveau versement" onClose={() => setOpen(false)}>
-        {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-sendistri-red">{error}</div>}
+        {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red">{error}</div>}
         <form onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }} className="grid grid-cols-2 gap-4">
           {user?.role !== 'PDV_OPERATOR' && (
             <SelectField label="PDV" name="pdvId" value={form.pdvId} onChange={set('pdvId')} required

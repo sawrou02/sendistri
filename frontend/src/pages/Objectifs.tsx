@@ -27,7 +27,7 @@ function currentPeriode() {
 const EMPTY = { pdvId: '', periode: currentPeriode(), recrutement_cible: '', reabonnement_cible: '', ca_cible: '' };
 
 const columns: Column<Objectif>[] = [
-  { key: 'pdv', header: 'PDV', render: (r) => r.pdv ? `${r.pdv.code} — ${r.pdv.name}` : <em className="text-gray-400">Distributeur</em> },
+  { key: 'pdv', header: 'PDV', render: (r) => r.pdv ? `${r.pdv.code} — ${r.pdv.name}` : <em className="text-text-3">Distributeur</em> },
   { key: 'periode', header: 'Période' },
   { key: 'recrutement_cible', header: 'Recrutement cible', align: 'right', render: (r) => fmt(r.recrutement_cible) },
   { key: 'reabonnement_cible', header: 'Réabonn. cible', align: 'right', render: (r) => fmt(r.reabonnement_cible) },
@@ -115,7 +115,7 @@ export default function Objectifs() {
           canManage ? (
             <button
               onClick={openCreate}
-              className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+              className="rounded-lg bg-green px-4 py-2 text-sm font-medium text-white hover:bg-green-d"
             >
               + Nouvel objectif
             </button>
@@ -133,7 +133,7 @@ export default function Objectifs() {
                   </button>
                   <button
                     onClick={() => deleteMutation.mutate(row.id)}
-                    className="rounded bg-red-100 px-2 py-1 text-xs font-medium text-sendistri-red hover:bg-red-200"
+                    className="rounded bg-red-100 px-2 py-1 text-xs font-medium text-red hover:bg-red-200"
                   >
                     Supprimer
                   </button>
@@ -148,7 +148,7 @@ export default function Objectifs() {
         title={editTarget ? `Modifier objectif — ${editTarget.periode}` : 'Nouvel objectif'}
         onClose={() => setOpen(false)}
       >
-        {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-sendistri-red">{error}</div>}
+        {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red">{error}</div>}
         <form
           onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(); }}
           className="grid grid-cols-2 gap-4"

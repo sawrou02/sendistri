@@ -110,7 +110,7 @@ export default function Users() {
         r.is_active ? (
           <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">Actif</span>
         ) : (
-          <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-sendistri-red">Inactif</span>
+          <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red">Inactif</span>
         ),
     },
     {
@@ -136,7 +136,7 @@ export default function Users() {
           isSuperAdmin ? (
             <button
               onClick={() => { setCreateOpen(true); setError(''); }}
-              className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+              className="rounded-lg bg-green px-4 py-2 text-sm font-medium text-white hover:bg-green-d"
             >
               + Nouvel utilisateur
             </button>
@@ -156,7 +156,7 @@ export default function Users() {
                     row.is_active ? (
                       <button
                         onClick={() => deactivateMutation.mutate(row.id)}
-                        className="rounded bg-red-100 px-2 py-1 text-xs font-medium text-sendistri-red hover:bg-red-200"
+                        className="rounded bg-red-100 px-2 py-1 text-xs font-medium text-red hover:bg-red-200"
                       >
                         Désactiver
                       </button>
@@ -177,7 +177,7 @@ export default function Users() {
 
       {/* Create user modal */}
       <Modal open={createOpen} title="Nouvel utilisateur" onClose={() => setCreateOpen(false)}>
-        {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-sendistri-red">{error}</div>}
+        {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red">{error}</div>}
         <form
           onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }}
           className="grid grid-cols-2 gap-4"
@@ -223,7 +223,7 @@ export default function Users() {
         onClose={() => setResetTarget(null)}
       >
         {resetError && (
-          <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-sendistri-red">{resetError}</div>
+          <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red">{resetError}</div>
         )}
         <form
           onSubmit={(e) => { e.preventDefault(); resetMutation.mutate(); }}
@@ -237,7 +237,7 @@ export default function Users() {
             onChange={(v) => setResetForm({ newPassword: v })}
             required
           />
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-text-3">
             Min. 8 caractères, une majuscule, une minuscule, un chiffre. L'utilisateur devra changer son mot de passe à la prochaine connexion.
           </p>
           <FormActions onCancel={() => setResetTarget(null)} submitting={resetMutation.isPending}>

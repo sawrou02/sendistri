@@ -19,11 +19,18 @@ interface AuditResponse {
   meta: { page: number; totalPages: number; total: number };
 }
 
-const METHOD_BADGE: Record<string, string> = {
-  POST: 'bg-blue-100 text-blue-700',
-  PUT: 'bg-amber-100 text-amber-700',
-  PATCH: 'bg-amber-100 text-amber-700',
-  DELETE: 'bg-red-100 text-sendistri-red',
+const METHOD_BADGE: Record<string, { bg: string; color: string }> = {
+  POST:   { bg: 'var(--blue-l)',   color: 'var(--blue)' },
+  PUT:    { bg: 'var(--yellow-l)', color: 'var(--yellow)' },
+  PATCH:  { bg: 'var(--yellow-l)', color: 'var(--yellow)' },
+  DELETE: { bg: 'var(--red-l)',    color: 'var(--red)' },
+};
+
+const inputCls = 'rounded-[9px] border px-3 py-2 text-[13px] outline-none transition-colors';
+const inputStyle: React.CSSProperties = {
+  borderColor: 'var(--border-strong)',
+  background: 'var(--surface)',
+  color: 'var(--text)',
 };
 
 export default function AuditLog() {
@@ -52,8 +59,12 @@ export default function AuditLog() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Journal d'audit</h1>
-        <span className="text-sm text-gray-400">{meta ? `${meta.total} entrées` : ''}</span>
+        <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--text)' }}>
+          Journal d'audit
+        </h1>
+        <span className="text-sm" style={{ color: 'var(--text-3)' }}>
+          {meta ? `${meta.total} entrées` : ''}
+        </span>
       </div>
 
       {/* Filters */}
@@ -63,24 +74,34 @@ export default function AuditLog() {
           placeholder="Ressource (ex: encaissements)"
           value={resource}
           onChange={(e) => { setResource(e.target.value); setPage(1); }}
-          className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none"
+          className={inputCls}
+          style={inputStyle}
+          onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--green)')}
+          onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border-strong)')}
         />
         <input
           type="date"
           value={from}
           onChange={(e) => { setFrom(e.target.value); setPage(1); }}
-          className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none"
+          className={inputCls}
+          style={inputStyle}
+          onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--green)')}
+          onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border-strong)')}
         />
         <input
           type="date"
           value={to}
           onChange={(e) => { setTo(e.target.value); setPage(1); }}
-          className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none"
+          className={inputCls}
+          style={inputStyle}
+          onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--green)')}
+          onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border-strong)')}
         />
         {(resource || from || to) && (
           <button
             onClick={() => { setResource(''); setFrom(''); setTo(''); setPage(1); }}
-            className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-500 hover:bg-gray-50"
+            className="rounded-[9px] px-3 py-2 text-sm"
+            style={{ border: '1px solid var(--border-strong)', color: 'var(--text-2)', background: 'var(--surface)' }}
           >
             Effacer filtres
           </button>
@@ -88,46 +109,71 @@ export default function AuditLog() {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+      <div
+        className="overflow-hidden rounded-2xl"
+        style={{ border: '1px solid var(--border)', background: 'var(--surface)', boxShadow: 'var(--shadow)' }}
+      >
         {isLoading ? (
-          <div className="py-16 text-center text-sm text-gray-400">Chargement…</div>
+          <div className="py-16 text-center text-sm" style={{ color: 'var(--text-3)' }}>Chargement…</div>
         ) : entries.length === 0 ? (
-          <div className="py-16 text-center text-sm text-gray-400">Aucune entrée trouvée.</div>
+          <div className="py-16 text-center text-sm" style={{ color: 'var(--text-3)' }}>Aucune entrée trouvée.</div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="border-b border-gray-100 bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <thead style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface-2)' }}>
               <tr>
-                <th className="px-4 py-3 text-left">Horodatage</th>
-                <th className="px-4 py-3 text-left">Utilisateur</th>
-                <th className="px-4 py-3 text-left">Action</th>
-                <th className="px-4 py-3 text-left">Ressource</th>
-                <th className="px-4 py-3 text-left">IP</th>
-                <th className="px-4 py-3 text-left">Détails</th>
+                {['Horodatage', 'Utilisateur', 'Action', 'Ressource', 'IP', 'Détails'].map((h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-[0.06em]"
+                    style={{ color: 'var(--text-3)' }}
+                  >
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody>
               {entries.map((e) => (
                 <>
-                  <tr key={e.id} className="hover:bg-gray-50">
-                    <td className="whitespace-nowrap px-4 py-3 text-gray-500">
+                  <tr
+                    key={e.id}
+                    style={{ borderBottom: '1px solid var(--border)' }}
+                    className="transition-colors"
+                    onMouseEnter={(el) => (el.currentTarget.style.background = 'var(--surface-2)')}
+                    onMouseLeave={(el) => (el.currentTarget.style.background = '')}
+                  >
+                    <td className="whitespace-nowrap px-4 py-3" style={{ color: 'var(--text-3)' }}>
                       {new Date(e.timestamp).toLocaleString('fr-FR')}
                     </td>
-                    <td className="px-4 py-3 text-gray-700">{e.user?.email ?? <em className="text-gray-400">Système</em>}</td>
+                    <td className="px-4 py-3" style={{ color: 'var(--text-2)' }}>
+                      {e.user?.email ?? <em style={{ color: 'var(--text-3)' }}>Système</em>}
+                    </td>
                     <td className="px-4 py-3">
-                      <span className={`rounded px-1.5 py-0.5 text-xs font-bold ${METHOD_BADGE[e.action] ?? 'bg-gray-100 text-gray-600'}`}>
+                      <span
+                        className="rounded px-1.5 py-0.5 text-xs font-bold"
+                        style={{
+                          background: METHOD_BADGE[e.action]?.bg ?? 'var(--surface-2)',
+                          color: METHOD_BADGE[e.action]?.color ?? 'var(--text-3)',
+                        }}
+                      >
                         {e.action}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-600">
+                    <td className="px-4 py-3 font-mono text-xs" style={{ color: 'var(--text-2)' }}>
                       {e.resource}
-                      {e.resource_id && <span className="ml-1 text-gray-400">/{e.resource_id.slice(0, 8)}…</span>}
+                      {e.resource_id && (
+                        <span style={{ color: 'var(--text-3)' }}>/{e.resource_id.slice(0, 8)}…</span>
+                      )}
                     </td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-400">{e.ip_address}</td>
+                    <td className="px-4 py-3 font-mono text-xs" style={{ color: 'var(--text-3)' }}>
+                      {e.ip_address}
+                    </td>
                     <td className="px-4 py-3">
                       {e.details && (
                         <button
                           onClick={() => setExpanded(expanded === e.id ? null : e.id)}
-                          className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 hover:bg-gray-200"
+                          className="rounded px-2 py-0.5 text-xs"
+                          style={{ background: 'var(--surface-2)', color: 'var(--text-2)' }}
                         >
                           {expanded === e.id ? 'Masquer' : 'Voir'}
                         </button>
@@ -135,9 +181,12 @@ export default function AuditLog() {
                     </td>
                   </tr>
                   {expanded === e.id && e.details && (
-                    <tr key={`${e.id}-details`} className="bg-gray-50">
+                    <tr key={`${e.id}-details`} style={{ background: 'var(--surface-2)' }}>
                       <td colSpan={6} className="px-4 py-3">
-                        <pre className="overflow-auto rounded bg-gray-100 p-3 text-xs text-gray-700">
+                        <pre
+                          className="overflow-auto rounded-lg p-3 text-xs font-mono"
+                          style={{ background: 'var(--bg)', color: 'var(--text-2)' }}
+                        >
                           {JSON.stringify(e.details, null, 2)}
                         </pre>
                       </td>
@@ -151,22 +200,27 @@ export default function AuditLog() {
 
         {/* Pagination */}
         {meta && meta.totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3">
-            <span className="text-xs text-gray-400">
+          <div
+            className="flex items-center justify-between px-4 py-3"
+            style={{ borderTop: '1px solid var(--border)' }}
+          >
+            <span className="text-xs" style={{ color: 'var(--text-3)' }}>
               Page {meta.page} / {meta.totalPages}
             </span>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage((p) => p - 1)}
                 disabled={meta.page <= 1}
-                className="rounded border border-gray-200 px-3 py-1 text-xs disabled:opacity-40 hover:bg-gray-50"
+                className="rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-40"
+                style={{ border: '1px solid var(--border-strong)', color: 'var(--text-2)', background: 'var(--surface)' }}
               >
                 ← Précédent
               </button>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={meta.page >= meta.totalPages}
-                className="rounded border border-gray-200 px-3 py-1 text-xs disabled:opacity-40 hover:bg-gray-50"
+                className="rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-40"
+                style={{ border: '1px solid var(--border-strong)', color: 'var(--text-2)', background: 'var(--surface)' }}
               >
                 Suivant →
               </button>

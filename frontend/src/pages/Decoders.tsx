@@ -23,7 +23,7 @@ const statutBadge = (s: string) => {
     STOCK: 'bg-blue-100 text-blue-700',
     DEPLOYED: 'bg-emerald-100 text-emerald-700',
     IMMOBILIZED: 'bg-amber-100 text-amber-700',
-    LOST: 'bg-red-100 text-sendistri-red',
+    LOST: 'bg-red-100 text-red',
   };
   return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${map[s] ?? ''}`}>{s}</span>;
 };
@@ -134,9 +134,9 @@ export default function Decoders() {
         filters={
           <>
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Statut</label>
+              <label className="text-xs font-medium text-text-3">Statut</label>
               <select value={filterStatut} onChange={(e) => setFilterStatut(e.target.value)}
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none">
+                className="rounded-lg border border-border px-3 py-2 text-sm focus:border-green focus:outline-none">
                 <option value="">Tous</option>
                 <option value="STOCK">En stock</option>
                 <option value="DEPLOYED">Déployé</option>
@@ -146,7 +146,7 @@ export default function Decoders() {
             </div>
             {filterStatut && (
               <button onClick={() => setFilterStatut('')}
-                className="self-end rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-500 hover:bg-gray-50">
+                className="self-end rounded-lg border border-border px-3 py-2 text-sm text-text-3 hover:bg-surface-2">
                 Effacer
               </button>
             )}
@@ -155,7 +155,7 @@ export default function Decoders() {
         toolbar={
           <div className="flex gap-2">
             <button onClick={handleExportCsv}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+              className="rounded-lg border border-border-strong bg-surface px-4 py-2 text-sm font-medium text-text-2 hover:bg-surface-2">
               ↓ CSV
             </button>
             <button onClick={handleExportPdf}
@@ -164,7 +164,7 @@ export default function Decoders() {
             </button>
             {canManage && (
               <button onClick={() => setOpen(true)}
-                className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+                className="rounded-lg bg-green px-4 py-2 text-sm font-medium text-white hover:bg-green-d">
                 + Ajouter au stock
               </button>
             )}
@@ -187,7 +187,7 @@ export default function Decoders() {
                     </button>
                   )}
                   {row.statut !== 'STOCK' && row.statut !== 'DEPLOYED' && (
-                    <span className="text-xs text-gray-400">—</span>
+                    <span className="text-xs text-text-3">—</span>
                   )}
                 </div>
               )
@@ -196,7 +196,7 @@ export default function Decoders() {
       />
 
       <Modal open={open} title="Ajouter un décodeur au stock" onClose={() => setOpen(false)}>
-        {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-sendistri-red">{error}</div>}
+        {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red">{error}</div>}
         <form onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }} className="grid grid-cols-2 gap-4">
           <TextField label="N° série" name="serial" value={form.serial} onChange={set('serial')} required />
           <TextField label="Type" name="type" value={form.type} onChange={set('type')} required />

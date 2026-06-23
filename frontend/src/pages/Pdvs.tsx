@@ -14,8 +14,8 @@ const fmt = (n: string | number) => new Intl.NumberFormat('fr-FR').format(Number
 const statutBadge = (s: string) => {
   const map: Record<string, string> = {
     ACTIVE: 'bg-emerald-100 text-emerald-700',
-    INACTIVE: 'bg-gray-100 text-gray-600',
-    SUSPENDED: 'bg-red-100 text-sendistri-red',
+    INACTIVE: 'bg-gray-100 text-text-2',
+    SUSPENDED: 'bg-red-100 text-red',
   };
   return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${map[s] ?? ''}`}>{s}</span>;
 };
@@ -77,11 +77,11 @@ export default function Pdvs() {
         extraParams={filterStatut ? { statut: filterStatut } : {}}
         filters={
           <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-600">Statut</label>
+            <label className="text-sm text-text-2">Statut</label>
             <select
               value={filterStatut}
               onChange={(e) => setFilterStatut(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-sendistri-green"
+              className="rounded-lg border border-border-strong px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-green"
             >
               <option value="">Tous</option>
               <option value="ACTIVE">Actif</option>
@@ -93,7 +93,7 @@ export default function Pdvs() {
         rowActions={(row) => (
           <button
             onClick={() => navigate(`/pdvs/${row.id}`)}
-            className="rounded px-2 py-1 text-xs text-sendistri-green hover:underline"
+            className="rounded px-2 py-1 text-xs text-green hover:underline"
           >
             Détail →
           </button>
@@ -102,7 +102,7 @@ export default function Pdvs() {
           canCreate ? (
             <button
               onClick={() => setOpen(true)}
-              className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+              className="rounded-lg bg-green px-4 py-2 text-sm font-medium text-white hover:bg-green-d"
             >
               + Nouveau PDV
             </button>
@@ -111,7 +111,7 @@ export default function Pdvs() {
       />
 
       <Modal open={open} title="Nouveau point de vente" onClose={() => setOpen(false)}>
-        {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-sendistri-red">{error}</div>}
+        {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red">{error}</div>}
         <form
           onSubmit={(e) => {
             e.preventDefault();

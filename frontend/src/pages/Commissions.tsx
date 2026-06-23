@@ -85,7 +85,7 @@ const statutBadge = (s: string) => {
   const map: Record<string, string> = {
     CALCULATED: 'bg-blue-100 text-blue-700',
     VALIDATED: 'bg-emerald-100 text-emerald-700',
-    PAID: 'bg-gray-100 text-gray-600',
+    PAID: 'bg-gray-100 text-text-2',
   };
   const labels: Record<string, string> = {
     CALCULATED: 'Calculé',
@@ -163,9 +163,9 @@ export default function Commissions() {
         filters={
           <>
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Statut</label>
+              <label className="text-xs font-medium text-text-3">Statut</label>
               <select value={filterStatut} onChange={(e) => setFilterStatut(e.target.value)}
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none">
+                className="rounded-lg border border-border px-3 py-2 text-sm focus:border-green focus:outline-none">
                 <option value="">Tous</option>
                 <option value="CALCULATED">Calculé</option>
                 <option value="VALIDATED">Validé</option>
@@ -173,14 +173,14 @@ export default function Commissions() {
               </select>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Période (AAAA-MM)</label>
+              <label className="text-xs font-medium text-text-3">Période (AAAA-MM)</label>
               <input type="month" value={filterPeriode}
                 onChange={(e) => setFilterPeriode(e.target.value ? e.target.value.slice(0, 7) : '')}
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none" />
+                className="rounded-lg border border-border px-3 py-2 text-sm focus:border-green focus:outline-none" />
             </div>
             {(filterStatut || filterPeriode) && (
               <button onClick={() => { setFilterStatut(''); setFilterPeriode(''); }}
-                className="self-end rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-500 hover:bg-gray-50">
+                className="self-end rounded-lg border border-border px-3 py-2 text-sm text-text-3 hover:bg-surface-2">
                 Effacer
               </button>
             )}
@@ -190,7 +190,7 @@ export default function Commissions() {
           <div className="flex gap-2">
             <button
               onClick={handleExportCsv}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-border-strong bg-surface px-4 py-2 text-sm font-medium text-text-2 hover:bg-surface-2"
             >
               ↓ CSV
             </button>
@@ -203,7 +203,7 @@ export default function Commissions() {
             {canManage && (
               <button
                 onClick={() => { setCalcOpen(true); setCalcResult(null); setCalcError(''); }}
-                className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+                className="rounded-lg bg-green px-4 py-2 text-sm font-medium text-white hover:bg-green-d"
               >
                 Calculer commissions
               </button>
@@ -233,7 +233,7 @@ export default function Commissions() {
                     </button>
                   )}
                   {row.statut === 'PAID' && (
-                    <span className="text-xs text-gray-400">Payé</span>
+                    <span className="text-xs text-text-3">Payé</span>
                   )}
                 </div>
               )
@@ -243,12 +243,12 @@ export default function Commissions() {
 
       <Modal open={calcOpen} title="Calculer les commissions" onClose={() => setCalcOpen(false)}>
         {calcError && (
-          <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-sendistri-red">{calcError}</div>
+          <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red">{calcError}</div>
         )}
         {calcResult && (
           <div className="mb-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{calcResult}</div>
         )}
-        <p className="mb-4 text-sm text-gray-500">
+        <p className="mb-4 text-sm text-text-3">
           Calcule les commissions (5% du CA validé + 10% bonus si objectif atteint) pour tous les PDVs actifs sur la période choisie.
         </p>
         <form

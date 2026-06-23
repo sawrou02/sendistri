@@ -26,9 +26,9 @@ const statutBadge = (s: string) => {
   const map: Record<string, string> = {
     ACTIF: 'bg-emerald-100 text-emerald-700',
     SUSPENDU: 'bg-amber-100 text-amber-700',
-    RESILIE: 'bg-red-100 text-sendistri-red',
+    RESILIE: 'bg-red-100 text-red',
   };
-  return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${map[s] ?? 'bg-gray-100 text-gray-600'}`}>{s}</span>;
+  return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${map[s] ?? 'bg-gray-100 text-text-2'}`}>{s}</span>;
 };
 
 const columns: Column<Subscriber>[] = [
@@ -140,9 +140,9 @@ export default function Subscribers() {
         filters={
           <>
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Statut</label>
+              <label className="text-xs font-medium text-text-3">Statut</label>
               <select value={filterStatut} onChange={(e) => setFilterStatut(e.target.value)}
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none">
+                className="rounded-lg border border-border px-3 py-2 text-sm focus:border-green focus:outline-none">
                 <option value="">Tous</option>
                 <option value="ACTIF">Actif</option>
                 <option value="SUSPENDU">Suspendu</option>
@@ -150,16 +150,16 @@ export default function Subscribers() {
               </select>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Formule</label>
+              <label className="text-xs font-medium text-text-3">Formule</label>
               <select value={filterFormule} onChange={(e) => setFilterFormule(e.target.value)}
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-sendistri-green focus:outline-none">
+                className="rounded-lg border border-border px-3 py-2 text-sm focus:border-green focus:outline-none">
                 <option value="">Toutes</option>
                 {FORMULES.map((f) => <option key={f} value={f}>{f}</option>)}
               </select>
             </div>
             {(filterStatut || filterFormule) && (
               <button onClick={() => { setFilterStatut(''); setFilterFormule(''); }}
-                className="self-end rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-500 hover:bg-gray-50">
+                className="self-end rounded-lg border border-border px-3 py-2 text-sm text-text-3 hover:bg-surface-2">
                 Effacer
               </button>
             )}
@@ -168,7 +168,7 @@ export default function Subscribers() {
         toolbar={
           <div className="flex gap-2">
             <button onClick={handleExportCsv}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+              className="rounded-lg border border-border-strong bg-surface px-4 py-2 text-sm font-medium text-text-2 hover:bg-surface-2">
               ↓ CSV
             </button>
             <button onClick={handleExportPdf}
@@ -176,7 +176,7 @@ export default function Subscribers() {
               ↓ PDF
             </button>
             <button onClick={() => setOpen(true)}
-              className="rounded-lg bg-sendistri-green px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+              className="rounded-lg bg-green px-4 py-2 text-sm font-medium text-white hover:bg-green-d">
               + Nouvel abonné
             </button>
           </div>
@@ -184,7 +184,7 @@ export default function Subscribers() {
       />
 
       <Modal open={open} title="Nouvel abonné" onClose={() => setOpen(false)}>
-        {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-sendistri-red">{error}</div>}
+        {error && <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red">{error}</div>}
         <form onSubmit={(e) => { e.preventDefault(); mutation.mutate(); }} className="grid grid-cols-2 gap-4">
           <TextField label="Code" name="code" value={form.code} onChange={set('code')} required />
           <TextField label="Téléphone" name="phone" value={form.phone} onChange={set('phone')} required />
